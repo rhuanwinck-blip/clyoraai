@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel | Clyora AI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<header class="header">
+  <div class="logo">Clyora<span>AI</span></div>
+  <nav class="nav">
+    <a href="#assinatura">Assinatura</a>
+    <a href="#ia">IA</a>
+    <a href="#conexoes">Conexões</a>
+    <a href="#renovar">Renovar</a>
+  </nav>
+  <a href="index.html" class="btn-header">Sair</a>
+</header>
+
+<section class="dashboard">
+  <div class="dashboard-title">
+    <span class="section-label">Painel do cliente</span>
+    <h1>Monitoramento da sua operação</h1>
+    <p>Acompanhe sua assinatura, conexões, anúncios nos Stories e status da IA.</p>
+  </div>
+
+  <div id="assinatura" class="dashboard-grid">
+    <div class="dash-card">
+      <h3>Status da assinatura</h3>
+      <p class="status active">Ativa</p>
+      <p>Plano atual: 6 meses</p>
+      <p>Tempo restante: 142 dias</p>
+      <p>Próxima renovação: valor atualizado vigente</p>
+    </div>
+
+    <div class="dash-card">
+      <h3>Atendimento IA</h3>
+      <p class="status active">Ligado</p>
+      <button class="small-btn">Pausar IA</button>
+    </div>
+
+    <div class="dash-card">
+      <h3>Anúncios nos Stories</h3>
+      <p class="status active">Ligado</p>
+      <p>Frequência: 2 vezes por semana</p>
+      <button class="small-btn">Pausar anúncios</button>
+    </div>
+  </div>
+
+  <div id="ia" class="dashboard-grid">
+    <div class="dash-card">
+      <h3>Últimos anúncios criados</h3>
+      <p>Story promocional criado</p>
+      <p>Story de oferta criado</p>
+      <p>Story institucional criado</p>
+    </div>
+
+    <div class="dash-card">
+      <h3>Atendimentos encaminhados</h3>
+      <p>Produto não cadastrado: 4</p>
+      <p>Preço não informado: 2</p>
+      <p>Solicitação humana: 3</p>
+    </div>
+
+    <div class="dash-card">
+      <h3>Controles rápidos</h3>
+      <button class="small-btn">Alterar frequência</button>
+      <button class="small-btn">Atualizar serviços</button>
+      <button class="small-btn">Trocar logo</button>
+    </div>
+  </div>
+
+  <div id="conexoes" class="dashboard-grid">
+    <div class="dash-card">
+      <h3>WhatsApp Business</h3>
+      <p class="status inactive">Não conectado</p>
+      <button class="small-btn">Conectar WhatsApp</button>
+    </div>
+
+    <div class="dash-card">
+      <h3>Instagram profissional</h3>
+      <p class="status inactive">Não conectado</p>
+      <button class="small-btn">Conectar Instagram</button>
+    </div>
+
+    <div class="dash-card">
+      <h3>Dados preservados</h3>
+      <p>Se sua assinatura acabar, seus dados permanecem salvos para renovação futura.</p>
+    </div>
+  </div>
+
+  <section id="renovar" class="renew-box">
+    <h2>Renovar assinatura</h2>
+    <p>
+      Quando seu plano terminar, o acesso será pausado. Para reativar, escolha um plano atual.
+      Seus dados anteriores permanecem salvos.
+    </p>
+
+    <div class="pricing">
+      <div class="price-card">
+        <h3>Mensal</h3>
+        <p class="price">R$1.600<span>/mês</span></p>
+        <a href="cadastro.html?plano=mensal" class="btn-primary">Renovar mensal</a>
+      </div>
+
+      <div class="price-card">
+        <h3>6 meses</h3>
+        <p class="price">R$1.400<span>/mês</span></p>
+        <a href="cadastro.html?plano=6meses" class="btn-primary">Renovar 6 meses</a>
+      </div>
+
+      <div class="price-card">
+        <h3>12 meses</h3>
+        <p class="price">R$1.000<span>/mês</span></p>
+        <a href="cadastro.html?plano=anual" class="btn-primary">Renovar anual</a>
+      </div>
+    </div>
+  </section>
+</section>
+</body>
+</html>

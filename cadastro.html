@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro | Clyora AI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<header class="header">
+  <div class="logo">Clyora<span>AI</span></div>
+  <a href="index.html" class="btn-header">Voltar</a>
+</header>
+
+<section class="form-page">
+  <div class="form-container">
+    <span class="section-label">Cadastro inicial</span>
+    <h1>Configure sua empresa antes do pagamento</h1>
+    <p class="subtitle">
+      Essas informações serão usadas para configurar a IA, criar anúncios nos Stories e responder seus clientes com segurança.
+    </p>
+
+    <div class="warning-box">
+      <strong>⚠️ Importante antes de continuar</strong>
+      <p>
+        Para o sistema funcionar corretamente, sua empresa precisa ter WhatsApp Business e acesso ao Instagram profissional.
+        Após o pagamento, você irá conectar suas contas oficialmente.
+      </p>
+    </div>
+
+    <form id="cadastroForm">
+      <h2>Dados da empresa</h2>
+
+      <label>Nome da empresa</label>
+      <input type="text" required placeholder="Ex: Oficina Silva" />
+
+      <label>Nome do responsável</label>
+      <input type="text" required placeholder="Nome de quem administra" />
+
+      <label>E-mail</label>
+      <input type="email" required placeholder="email@empresa.com" />
+
+      <label>WhatsApp da empresa</label>
+      <input type="text" required placeholder="(00) 00000-0000" />
+
+      <label>Instagram da empresa</label>
+      <input type="text" placeholder="@suaempresa" />
+
+      <label>Qual é o nicho da sua empresa?</label>
+      <input type="text" required placeholder="Ex: estética, peças agrícolas, moda, educação..." />
+
+      <label>Você atende online, presencial ou os dois?</label>
+      <select required>
+        <option value="">Selecione</option>
+        <option>Online</option>
+        <option>Presencial</option>
+        <option>Online e presencial</option>
+      </select>
+
+      <label>Cidade/estado ou região de atendimento</label>
+      <input type="text" placeholder="Ex: Brasil inteiro, Curitiba/PR..." />
+
+      <label>Público-alvo</label>
+      <textarea required placeholder="Descreva quem você quer atingir"></textarea>
+
+      <label>Envie a logo ou imagem da marca</label>
+      <input type="file" accept="image/*" />
+
+      <h2>Serviços</h2>
+
+      <p class="helper">
+        Informe os serviços que sua empresa presta. A IA usará isso para responder clientes e criar anúncios.
+      </p>
+
+      <label>Quais serviços sua empresa oferece?</label>
+      <textarea required placeholder="Ex: instalação, manutenção, consultoria, limpeza, estética..."></textarea>
+
+      <h2>Produtos ou peças</h2>
+
+      <label>Sua empresa vende produtos ou peças?</label>
+      <select id="vendeProdutos" required>
+        <option value="">Selecione</option>
+        <option value="sim">Sim</option>
+        <option value="nao">Não vendo produtos/peças</option>
+        <option value="nao_informar">Prefiro não informar</option>
+      </select>
+
+      <div id="produtosBox" class="hidden">
+        <p class="helper">
+          Cadastre os produtos, peças ou itens principais. Se tiver muitos, coloque apenas os mais vendidos ou mais importantes.
+          A IA só responderá sobre itens cadastrados. Se perguntarem sobre algo não cadastrado, será encaminhado para humano.
+        </p>
+
+        <label>Produto/peça/serviço principal 1</label>
+        <input type="text" placeholder="Nome do item" />
+        <textarea placeholder="Descrição do item"></textarea>
+        <select>
+          <option>Preço sob consulta</option>
+          <option>Valor fixo informado na observação</option>
+        </select>
+        <input type="text" placeholder="Valor, se desejar informar" />
+
+        <label>Produto/peça/serviço principal 2</label>
+        <input type="text" placeholder="Nome do item" />
+        <textarea placeholder="Descrição do item"></textarea>
+        <select>
+          <option>Preço sob consulta</option>
+          <option>Valor fixo informado na observação</option>
+        </select>
+        <input type="text" placeholder="Valor, se desejar informar" />
+
+        <label>Produto/peça/serviço principal 3</label>
+        <input type="text" placeholder="Nome do item" />
+        <textarea placeholder="Descrição do item"></textarea>
+        <select>
+          <option>Preço sob consulta</option>
+          <option>Valor fixo informado na observação</option>
+        </select>
+        <input type="text" placeholder="Valor, se desejar informar" />
+      </div>
+
+      <h2>Limites da IA</h2>
+
+      <label>Sobre o que a IA pode responder?</label>
+      <textarea required placeholder="Ex: serviços cadastrados, produtos cadastrados, horários, formas de contato..."></textarea>
+
+      <label>Sobre o que a IA NÃO pode responder?</label>
+      <textarea required placeholder="Ex: dados internos, fornecedores, faturamento, problemas da empresa, negociações especiais..."></textarea>
+
+      <label>Quando a IA deve encaminhar para atendimento humano?</label>
+      <textarea required placeholder="Ex: quando não souber, quando perguntarem item não cadastrado, quando pedirem desconto..."></textarea>
+
+      <label>Tom de voz da IA</label>
+      <select required>
+        <option value="">Selecione</option>
+        <option>Profissional</option>
+        <option>Amigável</option>
+        <option>Premium/luxuoso</option>
+        <option>Direto</option>
+        <option>Descontraído</option>
+        <option>Técnico</option>
+      </select>
+
+      <h2>Anúncios nos Stories</h2>
+
+      <label>Deseja que a IA crie imagens de anúncio para os Stories do Instagram?</label>
+      <select required>
+        <option value="">Selecione</option>
+        <option>Sim, criar e postar automaticamente nos Stories</option>
+        <option>Sim, criar, mas quero aprovar antes</option>
+        <option>Não quero anúncios nos Stories</option>
+      </select>
+
+      <label>De quanto em quanto tempo deseja anúncios nos Stories?</label>
+      <select required>
+        <option value="">Selecione</option>
+        <option>1 vez por semana</option>
+        <option>2 vezes por semana</option>
+        <option>3 vezes por semana</option>
+        <option>Todos os dias</option>
+        <option>Personalizado</option>
+      </select>
+
+      <label>Se escolheu personalizado, escreva a frequência desejada</label>
+      <input type="text" placeholder="Ex: a cada 10 dias, toda segunda e sexta..." />
+
+      <div class="warning-box">
+        <p>
+          Os conteúdos gerados pela plataforma podem conter uma assinatura discreta da tecnologia utilizada,
+          como “Powered by Clyora AI”.
+        </p>
+      </div>
+
+      <h2>Confirmações</h2>
+
+      <label class="checkbox">
+        <input type="checkbox" required />
+        Confirmo que possuo WhatsApp Business e acesso às redes sociais informadas.
+      </label>
+
+      <label class="checkbox">
+        <input type="checkbox" required />
+        Entendo que a IA responderá apenas com base nas informações cadastradas.
+      </label>
+
+      <label class="checkbox">
+        <input type="checkbox" required />
+        Entendo que, se perguntarem sobre algo não cadastrado, o atendimento será encaminhado para humano.
+      </label>
+
+      <label class="checkbox">
+        <input type="checkbox" required />
+        Li e aceito os Termos de Uso, Política de Privacidade e regras de operação da plataforma.
+      </label>
+
+      <button type="submit" class="btn-primary full">Continuar para pagamento</button>
+    </form>
+  </div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
