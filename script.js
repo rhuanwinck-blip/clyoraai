@@ -1,7 +1,7 @@
 console.log("Clyora AI carregado com sucesso.");
 
 const SUPABASE_URL = "https://odmzoygdrllcypxnuooa.supabase.co";
-const SUPABASE_KEY = "COLE_AQUI_SUA_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "sb_publishable_u9jyER7w06nT3I7cOKYgOQ_08ScqMiF";
 
 const supabaseClient = window.supabase
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
