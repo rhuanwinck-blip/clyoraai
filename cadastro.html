@@ -36,25 +36,25 @@
       <h2>Dados da empresa</h2>
 
       <label>Nome da empresa</label>
-      <input type="text" required placeholder="Ex: Oficina Silva" />
+      <input id="nome_empresa" name="nome_empresa" type="text" required placeholder="Ex: Oficina Silva" />
 
       <label>Nome do responsável</label>
-      <input type="text" required placeholder="Nome de quem administra" />
+      <input id="nome_responsavel" name="nome_responsavel" type="text" required placeholder="Nome de quem administra" />
 
       <label>E-mail</label>
-      <input type="email" required placeholder="email@empresa.com" />
+      <input id="email" name="email" type="email" required placeholder="email@empresa.com" />
 
       <label>WhatsApp da empresa</label>
-      <input type="text" required placeholder="(00) 00000-0000" />
+      <input id="whatsapp" name="whatsapp" type="text" required placeholder="(00) 00000-0000" />
 
       <label>Instagram da empresa</label>
-      <input type="text" placeholder="@suaempresa" />
+      <input id="instagram" name="instagram" type="text" placeholder="@suaempresa" />
 
       <label>Qual é o nicho da sua empresa?</label>
-      <input type="text" required placeholder="Ex: estética, peças agrícolas, moda, educação..." />
+      <input id="nicho" name="nicho" type="text" required placeholder="Ex: estética, peças agrícolas, moda, educação..." />
 
       <label>Você atende online, presencial ou os dois?</label>
-      <select required>
+      <select id="tipo_atendimento" name="tipo_atendimento" required>
         <option value="">Selecione uma opção</option>
         <option>Online</option>
         <option>Presencial</option>
@@ -62,13 +62,13 @@
       </select>
 
       <label>Cidade/estado ou região de atendimento</label>
-      <input type="text" placeholder="Ex: Brasil inteiro, Curitiba/PR..." />
+      <input id="regiao_atendimento" name="regiao_atendimento" type="text" placeholder="Ex: Brasil inteiro, Curitiba/PR..." />
 
       <label>Público-alvo</label>
-      <textarea required placeholder="Descreva quem você quer atingir. Ex: donos de empresa, produtores rurais, mulheres de 25 a 45 anos..."></textarea>
+      <textarea id="publico_alvo" name="publico_alvo" required placeholder="Descreva quem você quer atingir. Ex: donos de empresa, produtores rurais, mulheres de 25 a 45 anos..."></textarea>
 
       <label>Envie a logo ou imagem da marca</label>
-      <input type="file" accept="image/*" />
+      <input id="logo_url" name="logo_url" type="file" accept="image/*" />
 
       <h2>Serviços</h2>
 
@@ -77,12 +77,12 @@
       </p>
 
       <label>Quais serviços sua empresa oferece?</label>
-      <textarea required placeholder="Ex: manutenção, consultoria, limpeza, instalação, estética, atendimento técnico..."></textarea>
+      <textarea id="servicos" name="servicos" required placeholder="Ex: manutenção, consultoria, limpeza, instalação, estética, atendimento técnico..."></textarea>
 
       <h2>Produtos ou peças</h2>
 
       <label>Sua empresa vende produtos ou peças?</label>
-      <select id="vendeProdutos" required>
+      <select id="vendeProdutos" name="vende_produtos" required>
         <option value="">Selecione uma opção</option>
         <option value="sim">Sim</option>
         <option value="nao">Não vendo produtos/peças</option>
@@ -96,46 +96,46 @@
         </p>
 
         <label>Produto/peça/serviço principal 1</label>
-        <input type="text" placeholder="Nome do item" />
-        <textarea placeholder="Descrição do item"></textarea>
-        <select>
+        <input id="produto_1_nome" name="produto_1_nome" type="text" placeholder="Nome do item" />
+        <textarea id="produto_1_descricao" name="produto_1_descricao" placeholder="Descrição do item"></textarea>
+        <select id="produto_1_preco_tipo" name="produto_1_preco_tipo">
           <option>Preço sob consulta</option>
           <option>Valor fixo informado abaixo</option>
         </select>
-        <input type="text" placeholder="Valor, se desejar informar" />
+        <input id="produto_1_valor" name="produto_1_valor" type="text" placeholder="Valor, se desejar informar" />
 
         <label>Produto/peça/serviço principal 2</label>
-        <input type="text" placeholder="Nome do item" />
-        <textarea placeholder="Descrição do item"></textarea>
-        <select>
+        <input id="produto_2_nome" name="produto_2_nome" type="text" placeholder="Nome do item" />
+        <textarea id="produto_2_descricao" name="produto_2_descricao" placeholder="Descrição do item"></textarea>
+        <select id="produto_2_preco_tipo" name="produto_2_preco_tipo">
           <option>Preço sob consulta</option>
           <option>Valor fixo informado abaixo</option>
         </select>
-        <input type="text" placeholder="Valor, se desejar informar" />
+        <input id="produto_2_valor" name="produto_2_valor" type="text" placeholder="Valor, se desejar informar" />
 
         <label>Produto/peça/serviço principal 3</label>
-        <input type="text" placeholder="Nome do item" />
-        <textarea placeholder="Descrição do item"></textarea>
-        <select>
+        <input id="produto_3_nome" name="produto_3_nome" type="text" placeholder="Nome do item" />
+        <textarea id="produto_3_descricao" name="produto_3_descricao" placeholder="Descrição do item"></textarea>
+        <select id="produto_3_preco_tipo" name="produto_3_preco_tipo">
           <option>Preço sob consulta</option>
           <option>Valor fixo informado abaixo</option>
         </select>
-        <input type="text" placeholder="Valor, se desejar informar" />
+        <input id="produto_3_valor" name="produto_3_valor" type="text" placeholder="Valor, se desejar informar" />
       </div>
 
       <h2>Limites da IA</h2>
 
       <label>Sobre o que a IA pode responder?</label>
-      <textarea required placeholder="Ex: serviços cadastrados, produtos cadastrados, horários, formas de contato, informações comerciais..."></textarea>
+      <textarea id="pode_responder" name="pode_responder" required placeholder="Ex: serviços cadastrados, produtos cadastrados, horários, formas de contato, informações comerciais..."></textarea>
 
       <label>Sobre o que a IA NÃO pode responder?</label>
-      <textarea required placeholder="Ex: dados internos, fornecedores, faturamento, problemas da empresa, negociações especiais..."></textarea>
+      <textarea id="nao_pode_responder" name="nao_pode_responder" required placeholder="Ex: dados internos, fornecedores, faturamento, problemas da empresa, negociações especiais..."></textarea>
 
       <label>Quando a IA deve encaminhar para atendimento humano?</label>
-      <textarea required placeholder="Ex: quando não souber, quando perguntarem item não cadastrado, quando pedirem desconto, quando reclamarem..."></textarea>
+      <textarea id="quando_encaminhar" name="quando_encaminhar" required placeholder="Ex: quando não souber, quando perguntarem item não cadastrado, quando pedirem desconto, quando reclamarem..."></textarea>
 
       <label>Tom de voz da IA</label>
-      <select required>
+      <select id="tom_voz" name="tom_voz" required>
         <option value="">Selecione uma opção</option>
         <option>Profissional</option>
         <option>Amigável</option>
@@ -148,7 +148,7 @@
       <h2>Marketing da empresa</h2>
 
       <label>Deseja que a Clyora crie materiais de divulgação para sua empresa?</label>
-      <select required>
+      <select id="marketing_opcao" name="marketing_opcao" required>
         <option value="">Selecione uma opção</option>
         <option>Sim, criar e publicar automaticamente</option>
         <option>Sim, criar, mas quero aprovar antes</option>
@@ -156,7 +156,7 @@
       </select>
 
       <label>Com qual frequência deseja que o marketing seja gerado?</label>
-      <select required>
+      <select id="marketing_frequencia" name="marketing_frequencia" required>
         <option value="">Selecione uma opção</option>
         <option>1 vez por semana</option>
         <option>2 vezes por semana</option>
@@ -166,7 +166,7 @@
       </select>
 
       <label>Se escolheu personalizado, escreva a frequência desejada</label>
-      <input type="text" placeholder="Ex: a cada 10 dias, toda segunda e sexta..." />
+      <input id="marketing_frequencia_personalizada" name="marketing_frequencia_personalizada" type="text" placeholder="Ex: a cada 10 dias, toda segunda e sexta..." />
 
       <div class="warning-box">
         <p>
