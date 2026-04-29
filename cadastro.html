@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Cadastro | Clyora AI</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
+
 <header class="header">
   <div class="logo">Clyora<span>AI</span></div>
   <a href="index.html" class="btn-header">Voltar</a>
@@ -17,15 +19,16 @@
   <div class="form-container">
     <span class="section-label">Cadastro inicial</span>
     <h1>Configure sua empresa antes do pagamento</h1>
+
     <p class="subtitle">
-      Essas informações serão usadas para configurar a IA, criar anúncios nos Stories e responder seus clientes com segurança.
+      Essas informações serão usadas para configurar a IA, orientar o atendimento e criar o marketing da sua empresa com segurança.
     </p>
 
     <div class="warning-box">
-      <strong>⚠️ Importante antes de continuar</strong>
+      <strong>Importante antes de continuar</strong>
       <p>
-        Para o sistema funcionar corretamente, sua empresa precisa ter WhatsApp Business e acesso ao Instagram profissional.
-        Após o pagamento, você irá conectar suas contas oficialmente.
+        Para o sistema funcionar corretamente, sua empresa precisa ter WhatsApp Business e acesso às redes sociais informadas.
+        Após o pagamento, você poderá conectar suas contas oficialmente.
       </p>
     </div>
 
@@ -52,7 +55,7 @@
 
       <label>Você atende online, presencial ou os dois?</label>
       <select required>
-        <option value="">Selecione</option>
+        <option value="">Selecione uma opção</option>
         <option>Online</option>
         <option>Presencial</option>
         <option>Online e presencial</option>
@@ -62,7 +65,7 @@
       <input type="text" placeholder="Ex: Brasil inteiro, Curitiba/PR..." />
 
       <label>Público-alvo</label>
-      <textarea required placeholder="Descreva quem você quer atingir"></textarea>
+      <textarea required placeholder="Descreva quem você quer atingir. Ex: donos de empresa, produtores rurais, mulheres de 25 a 45 anos..."></textarea>
 
       <label>Envie a logo ou imagem da marca</label>
       <input type="file" accept="image/*" />
@@ -70,17 +73,17 @@
       <h2>Serviços</h2>
 
       <p class="helper">
-        Informe os serviços que sua empresa presta. A IA usará isso para responder clientes e criar anúncios.
+        Informe os serviços que sua empresa presta. A IA usará isso para orientar respostas e criar materiais de divulgação.
       </p>
 
       <label>Quais serviços sua empresa oferece?</label>
-      <textarea required placeholder="Ex: instalação, manutenção, consultoria, limpeza, estética..."></textarea>
+      <textarea required placeholder="Ex: manutenção, consultoria, limpeza, instalação, estética, atendimento técnico..."></textarea>
 
       <h2>Produtos ou peças</h2>
 
       <label>Sua empresa vende produtos ou peças?</label>
       <select id="vendeProdutos" required>
-        <option value="">Selecione</option>
+        <option value="">Selecione uma opção</option>
         <option value="sim">Sim</option>
         <option value="nao">Não vendo produtos/peças</option>
         <option value="nao_informar">Prefiro não informar</option>
@@ -89,7 +92,7 @@
       <div id="produtosBox" class="hidden">
         <p class="helper">
           Cadastre os produtos, peças ou itens principais. Se tiver muitos, coloque apenas os mais vendidos ou mais importantes.
-          A IA só responderá sobre itens cadastrados. Se perguntarem sobre algo não cadastrado, será encaminhado para humano.
+          A IA só responderá sobre itens cadastrados. Se perguntarem sobre algo não cadastrado, será encaminhado para atendimento humano.
         </p>
 
         <label>Produto/peça/serviço principal 1</label>
@@ -97,7 +100,7 @@
         <textarea placeholder="Descrição do item"></textarea>
         <select>
           <option>Preço sob consulta</option>
-          <option>Valor fixo informado na observação</option>
+          <option>Valor fixo informado abaixo</option>
         </select>
         <input type="text" placeholder="Valor, se desejar informar" />
 
@@ -106,7 +109,7 @@
         <textarea placeholder="Descrição do item"></textarea>
         <select>
           <option>Preço sob consulta</option>
-          <option>Valor fixo informado na observação</option>
+          <option>Valor fixo informado abaixo</option>
         </select>
         <input type="text" placeholder="Valor, se desejar informar" />
 
@@ -115,7 +118,7 @@
         <textarea placeholder="Descrição do item"></textarea>
         <select>
           <option>Preço sob consulta</option>
-          <option>Valor fixo informado na observação</option>
+          <option>Valor fixo informado abaixo</option>
         </select>
         <input type="text" placeholder="Valor, se desejar informar" />
       </div>
@@ -123,17 +126,17 @@
       <h2>Limites da IA</h2>
 
       <label>Sobre o que a IA pode responder?</label>
-      <textarea required placeholder="Ex: serviços cadastrados, produtos cadastrados, horários, formas de contato..."></textarea>
+      <textarea required placeholder="Ex: serviços cadastrados, produtos cadastrados, horários, formas de contato, informações comerciais..."></textarea>
 
       <label>Sobre o que a IA NÃO pode responder?</label>
       <textarea required placeholder="Ex: dados internos, fornecedores, faturamento, problemas da empresa, negociações especiais..."></textarea>
 
       <label>Quando a IA deve encaminhar para atendimento humano?</label>
-      <textarea required placeholder="Ex: quando não souber, quando perguntarem item não cadastrado, quando pedirem desconto..."></textarea>
+      <textarea required placeholder="Ex: quando não souber, quando perguntarem item não cadastrado, quando pedirem desconto, quando reclamarem..."></textarea>
 
       <label>Tom de voz da IA</label>
       <select required>
-        <option value="">Selecione</option>
+        <option value="">Selecione uma opção</option>
         <option>Profissional</option>
         <option>Amigável</option>
         <option>Premium/luxuoso</option>
@@ -142,19 +145,19 @@
         <option>Técnico</option>
       </select>
 
-      <h2>Anúncios nos Stories</h2>
+      <h2>Marketing da empresa</h2>
 
-      <label>Deseja que a IA crie imagens de anúncio para os Stories do Instagram?</label>
+      <label>Deseja que a Clyora crie materiais de divulgação para sua empresa?</label>
       <select required>
-        <option value="">Selecione</option>
-        <option>Sim, criar e postar automaticamente nos Stories</option>
+        <option value="">Selecione uma opção</option>
+        <option>Sim, criar e publicar automaticamente</option>
         <option>Sim, criar, mas quero aprovar antes</option>
-        <option>Não quero anúncios nos Stories</option>
+        <option>Não quero marketing automático</option>
       </select>
 
-      <label>De quanto em quanto tempo deseja anúncios nos Stories?</label>
+      <label>Com qual frequência deseja que o marketing seja gerado?</label>
       <select required>
-        <option value="">Selecione</option>
+        <option value="">Selecione uma opção</option>
         <option>1 vez por semana</option>
         <option>2 vezes por semana</option>
         <option>3 vezes por semana</option>
@@ -167,7 +170,7 @@
 
       <div class="warning-box">
         <p>
-          Os conteúdos gerados pela plataforma podem conter uma assinatura discreta da tecnologia utilizada,
+          Os materiais gerados pela plataforma podem conter uma assinatura discreta da tecnologia utilizada,
           como “Powered by Clyora AI”.
         </p>
       </div>
