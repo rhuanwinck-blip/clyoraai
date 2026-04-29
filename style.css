@@ -439,18 +439,42 @@ textarea {
 select {
   cursor: pointer;
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 48px;
+  background-color: #fffdf8;
   background-image:
     linear-gradient(45deg, transparent 50%, #0b8f5a 50%),
-    linear-gradient(135deg, #0b8f5a 50%, transparent 50%);
+    linear-gradient(135deg, #0b8f5a 50%, transparent 50%),
+    linear-gradient(to right, rgba(11,143,90,0.14), rgba(11,143,90,0.14));
   background-position:
-    calc(100% - 22px) calc(50% - 3px),
-    calc(100% - 16px) calc(50% - 3px);
-  background-size: 6px 6px, 6px 6px;
+    calc(100% - 25px) calc(50% - 3px),
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 46px) 50%;
+  background-size:
+    7px 7px,
+    7px 7px,
+    1px 55%;
   background-repeat: no-repeat;
 }
 
+select:hover {
+  border-color: rgba(11,143,90,0.55);
+  box-shadow: 0 10px 28px rgba(11,143,90,0.08);
+}
+
+select:focus {
+  border-color: #17c784;
+  box-shadow: 0 0 0 4px rgba(23,199,132,0.14);
+  background-color: #fff;
+}
+
+option {
+  background: #fffdf8;
+  color: #111;
+}
+
 input:focus,
-select:focus,
 textarea:focus {
   border-color: #17c784;
   box-shadow: 0 0 0 4px rgba(23,199,132,0.14);
