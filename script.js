@@ -33,3 +33,23 @@ if (cadastroForm) {
     }
   });
 }
+
+const openTerms = document.getElementById("openTerms");
+const closeTerms = document.getElementById("closeTerms");
+const termsModal = document.getElementById("termsModal");
+
+if (openTerms && closeTerms && termsModal) {
+  openTerms.addEventListener("click", () => {
+    termsModal.classList.add("active");
+  });
+
+  closeTerms.addEventListener("click", () => {
+    termsModal.classList.remove("active");
+  });
+
+  termsModal.addEventListener("click", (event) => {
+    if (event.target === termsModal) {
+      termsModal.classList.remove("active");
+    }
+  });
+}
