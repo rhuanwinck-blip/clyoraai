@@ -1,41 +1,55 @@
+console.log("cliente.js carregou");
+
 const SUPABASE_URL = "https://odmzoygdrllcypxnuooa.supabase.co";
 const SUPABASE_KEY = "sb_publishable_u9jyER7w06nT3I7cOKYgOQ_08ScqMiF";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const params = new URLSearchParams(window.location.search);
+const acesso = params.get("acesso");
+
+if (acesso !== "clyora2026") {
+  alert("Acesso bloqueado. Crie sua conta somente após o pagamento.");
+  window.location.href = "index.html";
+}
 
 const email = document.getElementById("email");
 const senha = document.getElementById("senha");
-
 const btnCriar = document.getElementById("btnCriar");
 const btnEntrar = document.getElementById("btnEntrar");
 
-// 🔥 CRIAR CONTA
 btnCriar.addEventListener("click", async () => {
-  const { error } = await supabase.auth.signUp({
+  alert("Tentando criar conta...");
+
+  const { data, error } = await supabaseClient.auth.signUp({
     email: email.value,
     password: senha.value
   });
 
   if (error) {
-    alert("Erro: " + error.message);
+    console.error(error);
+    alert("Erro ao criar conta: " + error.message);
     return;
   }
 
-  alert("Conta criada! Agora faça login.");
+  console.log(data);
+  alert("Conta criada! Agora clique em Entrar.");
 });
 
-// 🔥 LOGIN
 btnEntrar.addEventListener("click", async () => {
-  const { error } = await supabase.auth.signInWithPassword({
+  alert("Tentando entrar...");
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
     email: email.value,
     password: senha.value
   });
 
   if (error) {
-    alert("Erro: " + error.message);
+    console.error(error);
+    alert("Erro ao entrar: " + error.message);
     return;
   }
 
-  // depois vamos criar essa página
+  console.log(data);
   window.location.href = "dashboard.html";
 });
