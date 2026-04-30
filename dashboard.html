@@ -9,120 +9,136 @@
 </head>
 
 <body>
-
 <header class="header">
   <div class="logo">Clyora<span>AI</span></div>
 
   <nav class="nav">
     <a href="#assinatura">Assinatura</a>
     <a href="#ia">IA</a>
-    <a href="#conexoes">Conexões</a>
-    <a href="#renovar">Renovar</a>
+    <a href="#marketing">Marketing</a>
+    <a href="#empresa">Empresa</a>
   </nav>
 
-  <a href="index.html" class="btn-header">Sair</a>
+  <button id="logoutBtn" class="btn-header">Sair</button>
 </header>
 
 <section class="dashboard">
   <div class="dashboard-title">
     <span class="section-label">Painel do cliente</span>
-    <h1>Monitoramento da sua operação</h1>
-    <p>Acompanhe sua assinatura, conexões, marketing ativo e status da IA.</p>
+    <h1 id="empresaTitulo">Carregando...</h1>
+    <p id="dashboardSubtitulo">Buscando informações da sua empresa.</p>
   </div>
 
-  <div id="assinatura" class="dashboard-grid">
-    <div class="dash-card">
-      <h3>Status da assinatura</h3>
-      <p class="status active">Ativa</p>
-      <p>Plano atual: 6 meses</p>
-      <p>Tempo restante: 142 dias</p>
-      <p>Próxima renovação: valor atualizado vigente</p>
-    </div>
-
-    <div class="dash-card">
-      <h3>Atendimento IA</h3>
-      <p class="status active">Ligado</p>
-      <button class="small-btn">Pausar IA</button>
-    </div>
-
-    <div class="dash-card">
-      <h3>Marketing automático</h3>
-      <p class="status active">Ligado</p>
-      <p>Frequência: 2 vezes por semana</p>
-      <button class="small-btn">Pausar marketing</button>
-    </div>
-  </div>
-
-  <div id="ia" class="dashboard-grid">
-    <div class="dash-card">
-      <h3>Últimos materiais criados</h3>
-      <p>Divulgação promocional criada</p>
-      <p>Campanha institucional criada</p>
-      <p>Material comercial criado</p>
-    </div>
-
-    <div class="dash-card">
-      <h3>Atendimentos encaminhados</h3>
-      <p>Produto não cadastrado: 4</p>
-      <p>Preço não informado: 2</p>
-      <p>Solicitação humana: 3</p>
-    </div>
-
-    <div class="dash-card">
-      <h3>Controles rápidos</h3>
-      <button class="small-btn">Alterar frequência</button>
-      <button class="small-btn">Atualizar serviços</button>
-      <button class="small-btn">Trocar logo</button>
-    </div>
-  </div>
-
-  <div id="conexoes" class="dashboard-grid">
-    <div class="dash-card">
-      <h3>WhatsApp Business</h3>
-      <p class="status inactive">Não conectado</p>
-      <button class="small-btn">Conectar WhatsApp</button>
-    </div>
-
-    <div class="dash-card">
-      <h3>Instagram profissional</h3>
-      <p class="status inactive">Não conectado</p>
-      <button class="small-btn">Conectar Instagram</button>
-    </div>
-
-    <div class="dash-card">
-      <h3>Dados preservados</h3>
-      <p>Se sua assinatura acabar, seus dados permanecem salvos para renovação futura.</p>
-    </div>
-  </div>
-
-  <section id="renovar" class="renew-box">
-    <h2>Renovar assinatura</h2>
+  <div id="bloqueioBox" class="warning-box hidden">
+    <strong>Acesso não liberado</strong>
     <p>
-      Quando seu plano terminar, o acesso será pausado. Para reativar, escolha um plano atual.
-      Seus dados anteriores permanecem salvos.
+      Sua assinatura ainda não está ativa ou precisa ser renovada.
+      Assim que o pagamento for confirmado, o painel será liberado.
     </p>
+    <a href="index.html#planos" class="btn-primary">Ver planos</a>
+  </div>
 
-    <div class="pricing">
-      <div class="price-card">
-        <h3>Mensal</h3>
-        <p class="price">R$1.600<span>/mês</span></p>
-        <a href="cadastro.html?plano=mensal" class="btn-primary">Renovar mensal</a>
+  <div id="dashboardConteudo">
+    <div id="assinatura" class="dashboard-grid">
+      <div class="dash-card">
+        <h3>Status da assinatura</h3>
+        <p id="statusCliente" class="status inactive">Carregando</p>
+        <p><strong>Plano:</strong> <span id="planoCliente">-</span></p>
+        <p><strong>Data de início:</strong> <span id="dataInicio">Não configurado</span></p>
+        <p><strong>Data de fim:</strong> <span id="dataFim">Não configurado</span></p>
       </div>
 
-      <div class="price-card">
-        <h3>6 meses</h3>
-        <p class="price">R$1.400<span>/mês</span></p>
-        <a href="cadastro.html?plano=6meses" class="btn-primary">Renovar 6 meses</a>
+      <div class="dash-card">
+        <h3>Atendimento com IA</h3>
+        <p id="iaStatus" class="status active">Preparado</p>
+        <p>A IA será configurada com base nas informações cadastradas da sua empresa.</p>
+        <button class="small-btn">Pausar IA</button>
       </div>
 
-      <div class="price-card">
-        <h3>12 meses</h3>
-        <p class="price">R$1.000<span>/mês</span></p>
-        <a href="cadastro.html?plano=anual" class="btn-primary">Renovar anual</a>
+      <div class="dash-card">
+        <h3>Marketing automático</h3>
+        <p id="marketingStatus" class="status active">Preparado</p>
+        <p><strong>Frequência:</strong> <span id="marketingFrequencia">-</span></p>
+        <button class="small-btn">Pausar marketing</button>
       </div>
     </div>
-  </section>
+
+    <div id="empresa" class="dashboard-grid">
+      <div class="dash-card">
+        <h3>Dados da empresa</h3>
+        <p><strong>Empresa:</strong> <span id="nomeEmpresa">-</span></p>
+        <p><strong>Responsável:</strong> <span id="nomeResponsavel">-</span></p>
+        <p><strong>E-mail:</strong> <span id="emailCliente">-</span></p>
+        <p><strong>WhatsApp:</strong> <span id="whatsappCliente">-</span></p>
+        <p><strong>Instagram:</strong> <span id="instagramCliente">-</span></p>
+      </div>
+
+      <div class="dash-card">
+        <h3>Perfil comercial</h3>
+        <p><strong>Nicho:</strong> <span id="nichoCliente">-</span></p>
+        <p><strong>Atendimento:</strong> <span id="tipoAtendimento">-</span></p>
+        <p><strong>Região:</strong> <span id="regiaoAtendimento">-</span></p>
+        <p><strong>Público-alvo:</strong> <span id="publicoAlvo">-</span></p>
+      </div>
+
+      <div class="dash-card">
+        <h3>Serviços</h3>
+        <p id="servicosCliente">-</p>
+      </div>
+    </div>
+
+    <div id="ia" class="dashboard-grid">
+      <div class="dash-card">
+        <h3>Regras da IA</h3>
+        <p><strong>Pode responder:</strong></p>
+        <p id="podeResponder">-</p>
+
+        <p><strong>Não pode responder:</strong></p>
+        <p id="naoPodeResponder">-</p>
+
+        <p><strong>Encaminhar para humano:</strong></p>
+        <p id="quandoEncaminhar">-</p>
+      </div>
+
+      <div class="dash-card">
+        <h3>Tom de voz</h3>
+        <p id="tomVoz">-</p>
+      </div>
+
+      <div class="dash-card">
+        <h3>Produtos principais</h3>
+        <p><strong>Produto 1:</strong> <span id="produto1">-</span></p>
+        <p><strong>Produto 2:</strong> <span id="produto2">-</span></p>
+        <p><strong>Produto 3:</strong> <span id="produto3">-</span></p>
+      </div>
+    </div>
+
+    <div id="marketing" class="dashboard-grid">
+      <div class="dash-card">
+        <h3>Configuração de marketing</h3>
+        <p><strong>Opção:</strong> <span id="marketingOpcao">-</span></p>
+        <p><strong>Frequência:</strong> <span id="marketingFreq2">-</span></p>
+        <p><strong>Personalizado:</strong> <span id="marketingPersonalizado">-</span></p>
+      </div>
+
+      <div class="dash-card">
+        <h3>Conexões</h3>
+        <p class="status inactive">WhatsApp não conectado</p>
+        <p class="status inactive">Instagram não conectado</p>
+        <button class="small-btn">Conectar WhatsApp</button>
+        <button class="small-btn">Conectar Instagram</button>
+      </div>
+
+      <div class="dash-card">
+        <h3>Renovação</h3>
+        <p>Quando seu plano terminar, o acesso será pausado até a renovação.</p>
+        <a href="index.html#planos" class="btn-primary">Renovar plano</a>
+      </div>
+    </div>
+  </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="dashboard.js"></script>
 </body>
 </html>
