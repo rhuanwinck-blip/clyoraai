@@ -1,55 +1,72 @@
-console.log("cliente.js carregou");
-
 const SUPABASE_URL = "https://odmzoygdrllcypxnuooa.supabase.co";
-const SUPABASE_KEY = "sb_publishable_u9jyER7w06nT3I7cOKYgOQ_08ScqMiF";
+const SUPABASE_KEY = "sb_publishable_u9jyER7w06nT317cOKYgOQ_08ScqMIF";
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const params = new URLSearchParams(window.location.search);
-const acesso = params.get("acesso");
+const emailInput = document.getElementById("email");
+const codigoInput = document.getElementById("codigo");
+const btnEnviarCodigo = document.getElementById("btnEnviarCodigo");
+const btnEntrar = document.getElementById("btnEntrar");
+const authMessage = document.getElementById("authMessage");
 
-if (acesso !== "clyora2026") {
-  alert("Acesso bloqueado. Crie sua conta somente após o pagamento.");
-  window.location.href = "index.html";
+// 🔥 FUNÇÃO DE MENSAGEM PROFISSIONAL
+function showMessage(text, type = "info") {
+  authMessage.textContent = text;
+  authMessage.className = `auth-message ${type}`;
 }
 
-const email = document.getElementById("email");
-const senha = document.getElementById("senha");
-const btnCriar = document.getElementById("btnCriar");
-const btnEntrar = document.getElementById("btnEntrar");
+// 🔥 ENVIAR CÓDIGO
+btnEnviarCodigo.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
 
-btnCriar.addEventListener("click", async () => {
-  alert("Tentando criar conta...");
-
-  const { data, error } = await supabaseClient.auth.signUp({
-    email: email.value,
-    password: senha.value
-  });
-
-  if (error) {
-    console.error(error);
-    alert("Erro ao criar conta: " + error.message);
+  if (!email) {
+    showMessage("Digite seu e-mail para continuar.", "error");
     return;
   }
 
-  console.log(data);
-  alert("Conta criada! Agora clique em Entrar.");
+  showMessage("Enviando código...", "info");
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email: email,
+    options: {
+      shouldCreateUser: false
+    }
+  });
+
+  if (error) {
+    showMessage("Erro ao enviar código. Verifique o e-mail.", "error");
+    return;
+  }
+
+  showMessage("Código enviado! Verifique seu e-mail.", "success");
 });
 
+// 🔥 LOGIN COM CÓDIGO
 btnEntrar.addEventListener("click", async () => {
-  alert("Tentando entrar...");
+  const email = emailInput.value.trim();
+  const codigo = codigoInput.value.trim();
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email.value,
-    password: senha.value
-  });
-
-  if (error) {
-    console.error(error);
-    alert("Erro ao entrar: " + error.message);
+  if (!email || !codigo) {
+    showMessage("Digite o e-mail e o código recebido.", "error");
     return;
   }
 
-  console.log(data);
-  window.location.href = "dashboard.html";
+  showMessage("Validando acesso...", "info");
+
+  const { error } = await supabase.auth.verifyOtp({
+    email: email,
+    token: codigo,
+    type: "email"
+  });
+
+  if (error) {
+    showMessage("Código inválido ou expirado.", "error");
+    return;
+  }
+
+  showMessage("Acesso liberado! Redirecionando...", "success");
+
+  setTimeout(() => {
+    window.location.href = "dashboard.html";
+  }, 1200);
 });
