@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Área do Cliente | Clyora AI</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="logo">Clyora<span>AI</span></div>
+  <a href="index.html" class="btn-header">Início</a>
+</header>
+
+<section class="form-page">
+  <div class="login-box">
+    <span class="section-label">Área do cliente</span>
+    <h1>Acesse sua conta</h1>
+    <p class="subtitle">Crie sua conta ou entre no painel.</p>
+
+    <form>
+      <label>E-mail</label>
+      <input id="email" type="email" required placeholder="seu@email.com"/>
+
+      <label>Senha</label>
+      <input id="senha" type="password" required placeholder="Digite sua senha"/>
+
+      <button type="button" id="btnCriar" class="btn-primary full">
+        Criar conta
+      </button>
+
+      <button type="button" id="btnEntrar" class="btn-primary full">
+        Entrar
+      </button>
+    </form>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cliente.js"></script>
+
+</body>
+</html>
