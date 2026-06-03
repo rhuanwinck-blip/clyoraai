@@ -9,7 +9,7 @@ function setText(id, value) {
 }
 
 function formatDate(dateValue) {
-  if (!dateValue) return "Não configurado";
+  if (!dateValue) return "Nao configurado";
   const date = new Date(dateValue);
   return date.toLocaleDateString("pt-BR");
 }
@@ -31,24 +31,33 @@ async function carregarDashboard() {
     .single();
 
   if (error || !cliente) {
-    document.getElementById("empresaTitulo").textContent = "Cadastro não encontrado";
+    document.getElementById("empresaTitulo").textContent = "Cadastro nao encontrado";
     document.getElementById("dashboardSubtitulo").textContent =
-      "Não encontramos os dados da sua empresa. Entre em contato com o suporte.";
+      "Nao encontramos os dados da sua empresa. Entre em contato com o suporte.";
     document.getElementById("dashboardConteudo").classList.add("hidden");
     return;
   }
 
   const status = cliente.status || "pendente";
   const statusEl = document.getElementById("statusCliente");
+  const bloqueioBox = document.getElementById("bloqueioBox");
+  const dashboardConteudo = document.getElementById("dashboardConteudo");
+
+  setText("empresaTitulo", cliente.nome_empresa || "Painel da empresa");
 
   statusEl.textContent = status;
   statusEl.className = status === "ativo" ? "status active" : "status inactive";
 
   if (status !== "ativo") {
-    document.getElementById("bloqueioBox").classList.remove("hidden");
+    setText("dashboardSubtitulo", "Seu cadastro foi recebido. O painel sera liberado apos a confirmacao do pagamento.");
+    bloqueioBox.classList.remove("hidden");
+    dashboardConteudo.classList.add("hidden");
+    return;
   }
 
-  setText("empresaTitulo", cliente.nome_empresa || "Painel da empresa");
+  bloqueioBox.classList.add("hidden");
+  dashboardConteudo.classList.remove("hidden");
+
   setText("dashboardSubtitulo", "Gerencie sua IA, marketing e dados da empresa.");
 
   setText("planoCliente", cliente.plano);
