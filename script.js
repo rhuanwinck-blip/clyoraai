@@ -17,12 +17,20 @@ if (vendeProdutos && produtosBox) {
   });
 }
 
+function getCheckoutLink(plano) {
+  if (plano === "mensal") return LINK_MENSAL;
+  if (plano === "trimestral") return LINK_TRIMESTRAL;
+  if (plano === "semestral") return LINK_SEMESTRAL;
+  return null;
+}
+
 const cadastroForm = document.getElementById("cadastroForm");
 
 if (cadastroForm) {
-  cadastroForm.addEventListener("submit", function (event) {
+  cadastroForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
+    const submitButton = cadastroForm.querySelector("button[type='submit']");
     const senha = document.getElementById("senha_acesso")?.value;
     const confirmarSenha = document.getElementById("confirmar_senha")?.value;
 
@@ -38,6 +46,12 @@ if (cadastroForm) {
 
     const params = new URLSearchParams(window.location.search);
     const plano = params.get("plano");
+    const checkoutLink = getCheckoutLink(plano);
+
+    if (!checkoutLink) {
+      alert("Plano nao identificado. Volte para a pagina inicial e escolha um plano.");
+      return;
+    }
 
     const dados = {
       nome_empresa: document.getElementById("nome_empresa")?.value || "",
@@ -78,19 +92,40 @@ if (cadastroForm) {
       marketing_frequencia_personalizada: document.getElementById("marketing_frequencia_personalizada")?.value || "",
 
       plano: plano,
-      status: "ativo"
+      status: "pendente"
     };
 
-    localStorage.setItem("clyora_dados_cliente", JSON.stringify(dados));
+    try {
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Preparando pagamento...";
+      }
 
-    if (plano === "mensal") {
-      window.location.href = LINK_MENSAL;
-    } else if (plano === "trimestral") {
-      window.location.href = LINK_TRIMESTRAL;
-    } else if (plano === "semestral") {
-      window.location.href = LINK_SEMESTRAL;
-    } else {
-      alert("Plano nao identificado. Volte para a pagina inicial e escolha um plano.");
+      const response = await fetch("/api/create-pending", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error || "Erro ao preparar seu cadastro.");
+      }
+
+      localStorage.setItem("clyora_dados_cliente", JSON.stringify({
+        email: dados.email,
+        plano: dados.plano,
+        status: "pendente"
+      }));
+
+      window.location.href = checkoutLink;
+    } catch (error) {
+      alert(error.message || "Erro ao preparar pagamento. Tente novamente.");
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Continuar para pagamento";
+      }
     }
   });
 }
