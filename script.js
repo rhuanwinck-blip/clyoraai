@@ -1,8 +1,8 @@
 console.log("Clyora AI carregado com sucesso.");
 
 const LINK_MENSAL = "COLE_AQUI_LINK_MENSAL";
-const LINK_6MESES = "COLE_AQUI_LINK_6MESES";
-const LINK_ANUAL = "COLE_AQUI_LINK_ANUAL";
+const LINK_TRIMESTRAL = "COLE_AQUI_LINK_TRIMESTRAL";
+const LINK_SEMESTRAL = "COLE_AQUI_LINK_SEMESTRAL";
 
 const vendeProdutos = document.getElementById("vendeProdutos");
 const produtosBox = document.getElementById("produtosBox");
@@ -32,7 +32,7 @@ if (cadastroForm) {
     }
 
     if (senha !== confirmarSenha) {
-      alert("As senhas não conferem.");
+      alert("As senhas nao conferem.");
       return;
     }
 
@@ -85,12 +85,12 @@ if (cadastroForm) {
 
     if (plano === "mensal") {
       window.location.href = LINK_MENSAL;
-    } else if (plano === "6meses") {
-      window.location.href = LINK_6MESES;
-    } else if (plano === "anual") {
-      window.location.href = LINK_ANUAL;
+    } else if (plano === "trimestral") {
+      window.location.href = LINK_TRIMESTRAL;
+    } else if (plano === "semestral") {
+      window.location.href = LINK_SEMESTRAL;
     } else {
-      alert("Plano não identificado. Volte para a página inicial e escolha um plano.");
+      alert("Plano nao identificado. Volte para a pagina inicial e escolha um plano.");
     }
   });
 }
