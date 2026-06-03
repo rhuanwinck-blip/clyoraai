@@ -4,27 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Ativando acesso | Clyora AI</title>
+  <title>Pagamento recebido | Clyora AI</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-
 <header class="header">
-  <div class="logo">Clyora<span>AI</span></div>
+  <div class="logo" aria-label="Clyora AI">
+    <span class="logo-mark">C</span>
+    <span class="logo-text">Clyora<span>AI</span></span>
+  </div>
 </header>
 
 <section class="form-page">
   <div class="login-box">
-    <span class="section-label">Ativação</span>
-    <h1>Estamos ativando seu acesso</h1>
+    <span class="section-label">Pagamento</span>
+    <h1>Estamos confirmando sua assinatura</h1>
     <p class="subtitle" id="ativarMensagem">
-      Aguarde enquanto configuramos sua conta.
+      Se o pagamento foi aprovado, seu painel sera liberado automaticamente assim que o Mercado Pago confirmar a assinatura.
     </p>
+
+    <div class="warning-box">
+      <strong>Proximo passo</strong>
+      <p>
+        Aguarde alguns instantes e acesse a area do cliente com o e-mail e a senha cadastrados. Se o acesso ainda aparecer pendente, tente novamente depois de alguns minutos.
+      </p>
+    </div>
+
+    <a href="cliente.html" class="btn-primary full">Acessar area do cliente</a>
   </div>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="ativar.js"></script>
 </body>
 </html>
