@@ -1,8 +1,8 @@
 console.log("Clyora AI carregado com sucesso.");
 
-const LINK_MENSAL = "COLE_AQUI_LINK_MENSAL";
-const LINK_TRIMESTRAL = "COLE_AQUI_LINK_TRIMESTRAL";
-const LINK_SEMESTRAL = "COLE_AQUI_LINK_SEMESTRAL";
+const LINK_MENSAL = "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=47cb3bbe00de45dea881d349b84fb30a";
+const LINK_TRIMESTRAL = "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=91e59597a6ee4289a4c661b434e206e3";
+const LINK_SEMESTRAL = "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=5f13c11db0fc45f384880c192410c93b";
 
 const vendeProdutos = document.getElementById("vendeProdutos");
 const produtosBox = document.getElementById("produtosBox");
