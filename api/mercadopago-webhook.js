@@ -4,6 +4,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.s
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 const MERCADO_PAGO_WEBHOOK_SECRET = process.env.MERCADO_PAGO_WEBHOOK_SECRET;
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
 
 const ACTIVE_STATUSES = new Set(["authorized", "active"]);
 const INACTIVE_STATUSES = new Set(["paused", "cancelled", "cancelled_process", "expired"]);
@@ -145,6 +146,29 @@ async function markPreCadastroPaid(user, plano) {
   });
 }
 
+async function notifyN8n(cliente, event = "cliente_ativado") {
+  if (!N8N_WEBHOOK_URL) return { sent: false, reason: "N8N_WEBHOOK_URL nao configurada" };
+
+  const response = await fetch(N8N_WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      event,
+      source: "clyoraai",
+      sent_at: new Date().toISOString(),
+      cliente
+    })
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(`Erro ao enviar para n8n: ${response.status} ${text}`);
+  }
+
+  return { sent: true };
+}
+
 function addMonths(date, months) {
   const next = new Date(date);
   next.setMonth(next.getMonth() + months);
@@ -235,7 +259,22 @@ module.exports = async function handler(req, res) {
 
       await markPreCadastroPaid(authUser, plano);
 
-      send(res, 200, { ok: true, activated: true, email: cadastroEmail, payer_email: payerEmail, external_reference: externalReference, plano });
+      let n8n = { sent: false };
+      try {
+        n8n = await notifyN8n(update, "cliente_ativado");
+        await updateClientByEmail(cadastroEmail, {
+          n8n_status: n8n.sent ? "enviado" : "nao_configurado",
+          n8n_enviado_em: n8n.sent ? new Date().toISOString() : null
+        });
+      } catch (n8nError) {
+        await updateClientByEmail(cadastroEmail, {
+          n8n_status: "erro",
+          n8n_erro: n8nError.message,
+          n8n_enviado_em: new Date().toISOString()
+        });
+      }
+
+      send(res, 200, { ok: true, activated: true, email: cadastroEmail, payer_email: payerEmail, external_reference: externalReference, plano, n8n });
       return;
     }
 
