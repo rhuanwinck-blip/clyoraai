@@ -1,8 +1,3 @@
-const SUPABASE_URL = "https://odmzoygdrllcypxnuooa.supabase.co";
-const SUPABASE_KEY = "sb_publishable_u9jyER7w06nT317cOKYgOQ_08ScqMIF";
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 const loginForm = document.getElementById("loginForm") || document.querySelector("form");
 const emailInput = document.getElementById("email");
 const senhaInput = document.getElementById("senha");
@@ -33,25 +28,38 @@ async function entrar(event) {
 
   showMessage("Entrando...", "info");
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password: senha
-  });
+  try {
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, senha })
+    });
 
-  if (error) {
-    showMessage("E-mail ou senha invalidos.", "error");
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error(payload.error || "E-mail ou senha invalidos.");
+    }
+
+    localStorage.setItem("clyora_session", JSON.stringify({
+      access_token: payload.access_token,
+      refresh_token: payload.refresh_token,
+      expires_at: payload.expires_at,
+      email: payload.user?.email || email
+    }));
+
+    showMessage("Acesso liberado. Redirecionando...", "success");
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 500);
+  } catch (error) {
+    showMessage(error.message || "Erro ao entrar.", "error");
     if (btnEntrar) {
       btnEntrar.disabled = false;
       btnEntrar.textContent = "Entrar";
     }
-    return;
   }
-
-  showMessage("Acesso liberado. Redirecionando...", "success");
-
-  setTimeout(() => {
-    window.location.href = "dashboard.html";
-  }, 700);
 }
 
 if (loginForm) {
