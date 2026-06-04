@@ -3,6 +3,35 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const ALLOWED_PLANS = new Set(["mensal", "trimestral", "semestral"]);
 
+const EMPTY_DETAILS = {
+  instagram: "",
+  nicho: "",
+  tipo_atendimento: "",
+  regiao_atendimento: "",
+  publico_alvo: "",
+  servicos: "",
+  vende_produtos: "",
+  produto_1_nome: "",
+  produto_1_descricao: "",
+  produto_1_preco_tipo: "",
+  produto_1_valor: "",
+  produto_2_nome: "",
+  produto_2_descricao: "",
+  produto_2_preco_tipo: "",
+  produto_2_valor: "",
+  produto_3_nome: "",
+  produto_3_descricao: "",
+  produto_3_preco_tipo: "",
+  produto_3_valor: "",
+  pode_responder: "",
+  nao_pode_responder: "",
+  quando_encaminhar: "",
+  tom_voz: "",
+  marketing_opcao: "",
+  marketing_frequencia: "",
+  marketing_frequencia_personalizada: ""
+};
+
 function send(res, status, body) {
   res.status(status).json(body);
 }
@@ -13,6 +42,7 @@ function cleanText(value) {
 
 function buildLeadPayload(input) {
   return {
+    ...EMPTY_DETAILS,
     nome_empresa: cleanText(input.nome_empresa),
     nome_responsavel: cleanText(input.nome_responsavel),
     email: cleanText(input.email).toLowerCase(),
