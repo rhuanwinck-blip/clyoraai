@@ -1,9 +1,5 @@
 console.log("Clyora AI carregado com sucesso.");
 
-const LINK_MENSAL = "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=47cb3bbe00de45dea881d349b84fb30a";
-const LINK_TRIMESTRAL = "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=91e59597a6ee4289a4c661b434e206e3";
-const LINK_SEMESTRAL = "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=5f13c11db0fc45f384880c192410c93b";
-
 const vendeProdutos = document.getElementById("vendeProdutos");
 const produtosBox = document.getElementById("produtosBox");
 
@@ -15,13 +11,6 @@ if (vendeProdutos && produtosBox) {
       produtosBox.classList.add("hidden");
     }
   });
-}
-
-function getCheckoutLink(plano) {
-  if (plano === "mensal") return LINK_MENSAL;
-  if (plano === "trimestral") return LINK_TRIMESTRAL;
-  if (plano === "semestral") return LINK_SEMESTRAL;
-  return null;
 }
 
 const cadastroForm = document.getElementById("cadastroForm");
@@ -46,9 +35,8 @@ if (cadastroForm) {
 
     const params = new URLSearchParams(window.location.search);
     const plano = params.get("plano");
-    const checkoutLink = getCheckoutLink(plano);
 
-    if (!checkoutLink) {
+    if (!plano) {
       alert("Plano nao identificado. Volte para a pagina inicial e escolha um plano.");
       return;
     }
@@ -113,13 +101,18 @@ if (cadastroForm) {
         throw new Error(payload.error || "Erro ao preparar seu cadastro.");
       }
 
+      if (!payload.checkout_url) {
+        throw new Error("Checkout nao retornado pelo Mercado Pago.");
+      }
+
       localStorage.setItem("clyora_dados_cliente", JSON.stringify({
         email: dados.email,
         plano: dados.plano,
-        status: "pendente"
+        status: "pendente_pagamento",
+        external_reference: payload.external_reference
       }));
 
-      window.location.href = checkoutLink;
+      window.location.href = payload.checkout_url;
     } catch (error) {
       alert(error.message || "Erro ao preparar pagamento. Tente novamente.");
       if (submitButton) {
