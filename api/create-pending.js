@@ -11,43 +11,16 @@ function cleanText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function buildClientPayload(input) {
-  const plano = cleanText(input.plano);
-
+function buildLeadPayload(input) {
   return {
     nome_empresa: cleanText(input.nome_empresa),
     nome_responsavel: cleanText(input.nome_responsavel),
     email: cleanText(input.email).toLowerCase(),
     whatsapp: cleanText(input.whatsapp),
-    instagram: cleanText(input.instagram),
-    nicho: cleanText(input.nicho),
-    tipo_atendimento: cleanText(input.tipo_atendimento),
-    regiao_atendimento: cleanText(input.regiao_atendimento),
-    publico_alvo: cleanText(input.publico_alvo),
-    servicos: cleanText(input.servicos),
-    vende_produtos: cleanText(input.vende_produtos),
-    produto_1_nome: cleanText(input.produto_1_nome),
-    produto_1_descricao: cleanText(input.produto_1_descricao),
-    produto_1_preco_tipo: cleanText(input.produto_1_preco_tipo),
-    produto_1_valor: cleanText(input.produto_1_valor),
-    produto_2_nome: cleanText(input.produto_2_nome),
-    produto_2_descricao: cleanText(input.produto_2_descricao),
-    produto_2_preco_tipo: cleanText(input.produto_2_preco_tipo),
-    produto_2_valor: cleanText(input.produto_2_valor),
-    produto_3_nome: cleanText(input.produto_3_nome),
-    produto_3_descricao: cleanText(input.produto_3_descricao),
-    produto_3_preco_tipo: cleanText(input.produto_3_preco_tipo),
-    produto_3_valor: cleanText(input.produto_3_valor),
-    pode_responder: cleanText(input.pode_responder),
-    nao_pode_responder: cleanText(input.nao_pode_responder),
-    quando_encaminhar: cleanText(input.quando_encaminhar),
-    tom_voz: cleanText(input.tom_voz),
-    marketing_opcao: cleanText(input.marketing_opcao),
-    marketing_frequencia: cleanText(input.marketing_frequencia),
-    marketing_frequencia_personalizada: cleanText(input.marketing_frequencia_personalizada),
-    plano,
-    status: "pendente",
-    data_cadastro: new Date().toISOString()
+    plano: cleanText(input.plano),
+    status: "pendente_pagamento",
+    data_cadastro: new Date().toISOString(),
+    atualizado_em: new Date().toISOString()
   };
 }
 
@@ -92,22 +65,22 @@ async function createAuthUser(email, password, metadata) {
   }
 }
 
-async function upsertClient(cliente) {
-  const existing = await supabaseRequest(`/rest/v1/clientes?email=eq.${encodeURIComponent(cliente.email)}&select=email&limit=1`, {
+async function upsertLead(lead) {
+  const existing = await supabaseRequest(`/rest/v1/clientes?email=eq.${encodeURIComponent(lead.email)}&select=email&limit=1`, {
     method: "GET"
   });
 
   if (Array.isArray(existing) && existing.length > 0) {
-    await supabaseRequest(`/rest/v1/clientes?email=eq.${encodeURIComponent(cliente.email)}`, {
+    await supabaseRequest(`/rest/v1/clientes?email=eq.${encodeURIComponent(lead.email)}`, {
       method: "PATCH",
-      body: JSON.stringify(cliente)
+      body: JSON.stringify(lead)
     });
     return;
   }
 
   await supabaseRequest("/rest/v1/clientes", {
     method: "POST",
-    body: JSON.stringify(cliente)
+    body: JSON.stringify(lead)
   });
 }
 
@@ -126,9 +99,16 @@ module.exports = async function handler(req, res) {
   const email = cleanText(body.email).toLowerCase();
   const password = cleanText(body.senha_acesso);
   const plano = cleanText(body.plano);
+  const nome = cleanText(body.nome_responsavel) || cleanText(body.nome_empresa);
+  const whatsapp = cleanText(body.whatsapp);
 
   if (!email || !password || password.length < 6) {
     send(res, 400, { error: "Informe email e senha com pelo menos 6 caracteres." });
+    return;
+  }
+
+  if (!nome || !whatsapp) {
+    send(res, 400, { error: "Informe nome e telefone para continuar." });
     return;
   }
 
@@ -138,21 +118,22 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const cliente = buildClientPayload(body);
+    const lead = buildLeadPayload(body);
 
     await createAuthUser(email, password, {
-      nome_empresa: cliente.nome_empresa,
-      plano: cliente.plano
+      nome_empresa: lead.nome_empresa,
+      nome_responsavel: lead.nome_responsavel,
+      plano: lead.plano
     });
 
-    await upsertClient(cliente);
+    await upsertLead(lead);
 
     send(res, 200, {
       ok: true,
-      status: "pendente",
-      message: "Cadastro pendente criado. Continue para o pagamento."
+      status: "pendente_pagamento",
+      message: "Lead salvo. Continue para o pagamento."
     });
   } catch (error) {
-    send(res, 500, { error: error.message || "Erro ao criar cadastro pendente." });
+    send(res, 500, { error: error.message || "Erro ao preparar pagamento." });
   }
 };
