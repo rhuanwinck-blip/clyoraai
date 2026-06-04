@@ -91,6 +91,37 @@ async function fetchSubscription(preapprovalId) {
   return data;
 }
 
+async function findAuthUserByEmail(email) {
+  for (let page = 1; page <= 10; page += 1) {
+    const data = await supabaseRequest(`/auth/v1/admin/users?page=${page}&per_page=100`, {
+      method: "GET"
+    });
+
+    const users = Array.isArray(data?.users) ? data.users : Array.isArray(data) ? data : [];
+    const found = users.find((user) => String(user.email || "").toLowerCase() === email);
+
+    if (found) return found;
+    if (users.length < 100) return null;
+  }
+
+  return null;
+}
+
+async function markPreCadastroPaid(user, plano) {
+  if (!user?.id) return;
+
+  await supabaseRequest(`/auth/v1/admin/users/${user.id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      user_metadata: {
+        ...(user.user_metadata || {}),
+        plano,
+        pre_cadastro_status: "pago"
+      }
+    })
+  });
+}
+
 function addMonths(date, months) {
   const next = new Date(date);
   next.setMonth(next.getMonth() + months);
@@ -153,10 +184,14 @@ module.exports = async function handler(req, res) {
     if (ACTIVE_STATUSES.has(status)) {
       const start = subscription.date_created ? new Date(subscription.date_created) : new Date();
       const end = getEndDate(plano, start);
+      const authUser = await findAuthUserByEmail(payerEmail);
+      const preCadastro = authUser?.user_metadata?.pre_cadastro || {};
 
       await updateClientByEmail(payerEmail, {
+        ...preCadastro,
+        email: payerEmail,
         status: "ativo",
-        plano,
+        plano: plano || preCadastro.plano,
         mercadopago_preapproval_id: subscription.id,
         mercadopago_plan_id: planId,
         data_inicio: start.toISOString(),
@@ -164,6 +199,8 @@ module.exports = async function handler(req, res) {
         pagamento_status: status,
         atualizado_em: new Date().toISOString()
       });
+
+      await markPreCadastroPaid(authUser, plano || preCadastro.plano);
 
       send(res, 200, { ok: true, activated: true, email: payerEmail, plano });
       return;
