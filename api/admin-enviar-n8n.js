@@ -1,7 +1,7 @@
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_ACCESS_CODE = process.env.ADMIN_ACCESS_CODE || process.env.ADMIN_TOKEN;
-const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || process.env.N8N_WEBHOOK;
 
 function send(res, status, body) {
   res.status(status).json(body);
