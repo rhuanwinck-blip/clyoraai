@@ -14,27 +14,56 @@ function formatDate(dateValue) {
   return date.toLocaleDateString("pt-BR");
 }
 
-async function carregarDashboard() {
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+function showDashboardError(title, message) {
+  setText("empresaTitulo", title);
+  setText("dashboardSubtitulo", message);
+  document.getElementById("dashboardConteudo")?.classList.add("hidden");
+}
 
-  if (userError || !userData.user) {
+async function getSession() {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error || !data?.session?.access_token) {
+    return null;
+  }
+
+  return data.session;
+}
+
+async function fetchCliente(accessToken) {
+  const response = await fetch("/api/me", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  const payload = await response.json();
+
+  if (!response.ok) {
+    throw new Error(payload.error || "Nao foi possivel carregar seus dados.");
+  }
+
+  return payload.cliente;
+}
+
+async function carregarDashboard() {
+  const session = await getSession();
+
+  if (!session) {
     window.location.href = "cliente.html";
     return;
   }
 
-  const emailLogado = userData.user.email;
+  let cliente;
 
-  const { data: cliente, error } = await supabase
-    .from("clientes")
-    .select("*")
-    .eq("email", emailLogado)
-    .single();
-
-  if (error || !cliente) {
-    document.getElementById("empresaTitulo").textContent = "Cadastro nao encontrado";
-    document.getElementById("dashboardSubtitulo").textContent =
-      "Nao encontramos os dados da sua empresa. Entre em contato com o suporte.";
-    document.getElementById("dashboardConteudo").classList.add("hidden");
+  try {
+    cliente = await fetchCliente(session.access_token);
+  } catch (error) {
+    showDashboardError(
+      "Cadastro nao encontrado",
+      error.message || "Nao encontramos os dados da sua empresa. Entre em contato com o suporte."
+    );
     return;
   }
 
@@ -45,20 +74,10 @@ async function carregarDashboard() {
 
   setText("empresaTitulo", cliente.nome_empresa || "Painel da empresa");
 
-  statusEl.textContent = status;
-  statusEl.className = status === "ativo" ? "status active" : "status inactive";
-
-  if (status !== "ativo") {
-    setText("dashboardSubtitulo", "Seu cadastro foi recebido. O painel sera liberado apos a confirmacao do pagamento.");
-    bloqueioBox.classList.remove("hidden");
-    dashboardConteudo.classList.add("hidden");
-    return;
+  if (statusEl) {
+    statusEl.textContent = status;
+    statusEl.className = status === "ativo" ? "status active" : "status inactive";
   }
-
-  bloqueioBox.classList.add("hidden");
-  dashboardConteudo.classList.remove("hidden");
-
-  setText("dashboardSubtitulo", "Gerencie sua IA, marketing e dados da empresa.");
 
   setText("planoCliente", cliente.plano);
   setText("dataInicio", formatDate(cliente.data_inicio));
@@ -90,6 +109,17 @@ async function carregarDashboard() {
   setText("marketingFrequencia", cliente.marketing_frequencia);
   setText("marketingFreq2", cliente.marketing_frequencia);
   setText("marketingPersonalizado", cliente.marketing_frequencia_personalizada);
+
+  if (status !== "ativo") {
+    setText("dashboardSubtitulo", "Seu cadastro foi recebido. O painel sera liberado apos a confirmacao do pagamento.");
+    bloqueioBox?.classList.remove("hidden");
+    dashboardConteudo?.classList.remove("hidden");
+    return;
+  }
+
+  bloqueioBox?.classList.add("hidden");
+  dashboardConteudo?.classList.remove("hidden");
+  setText("dashboardSubtitulo", "Gerencie sua IA, marketing e dados da empresa.");
 }
 
 const logoutBtn = document.getElementById("logoutBtn");
