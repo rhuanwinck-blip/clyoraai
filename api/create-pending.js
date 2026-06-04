@@ -3,19 +3,28 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 const SITE_URL = process.env.SITE_URL || "https://clyoraai.vercel.app";
 
-const PLAN_IDS = {
-  mensal: "47cb3bbe00de45dea881d349b84fb30a",
-  trimestral: "91e59597a6ee4289a4c661b434e206e3",
-  semestral: "5f13c11db0fc45f384880c192410c93b"
+const PLAN_CONFIG = {
+  mensal: {
+    reason: "Clyora AI - Plano Mensal",
+    amount: 149.99,
+    frequency: 1,
+    frequency_type: "months"
+  },
+  trimestral: {
+    reason: "Clyora AI - Plano Trimestral",
+    amount: 124.99,
+    frequency: 1,
+    frequency_type: "months"
+  },
+  semestral: {
+    reason: "Clyora AI - Plano Semestral",
+    amount: 99.99,
+    frequency: 1,
+    frequency_type: "months"
+  }
 };
 
-const PLAN_REASONS = {
-  mensal: "Clyora AI - Plano Mensal",
-  trimestral: "Clyora AI - Plano Trimestral",
-  semestral: "Clyora AI - Plano Semestral"
-};
-
-const ALLOWED_PLANS = new Set(Object.keys(PLAN_IDS));
+const ALLOWED_PLANS = new Set(Object.keys(PLAN_CONFIG));
 
 const EMPTY_DETAILS = {
   instagram: "",
@@ -214,17 +223,23 @@ async function upsertLead(lead) {
 }
 
 async function createMercadoPagoCheckout(cadastro) {
-  const response = await fetch("https://api.mercadopago.com/preapproval", {
+  const config = PLAN_CONFIG[cadastro.plano];
+
+  const response = await fetch("https://api.mercadopago.com/preapproval_plan", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${MERCADO_PAGO_ACCESS_TOKEN}`
     },
     body: JSON.stringify({
-      preapproval_plan_id: PLAN_IDS[cadastro.plano],
-      reason: PLAN_REASONS[cadastro.plano],
-      payer_email: cadastro.email,
+      reason: config.reason,
       external_reference: cadastro.external_reference,
+      auto_recurring: {
+        frequency: config.frequency,
+        frequency_type: config.frequency_type,
+        transaction_amount: config.amount,
+        currency_id: "BRL"
+      },
       back_url: `${SITE_URL}/pagamento-sucesso.html?ref=${encodeURIComponent(cadastro.external_reference)}`
     })
   });
@@ -235,7 +250,10 @@ async function createMercadoPagoCheckout(cadastro) {
     throw new Error(data?.message || "Erro ao criar checkout no Mercado Pago.");
   }
 
-  return data.init_point || data.sandbox_init_point;
+  return {
+    checkoutUrl: data.init_point,
+    planId: data.id
+  };
 }
 
 module.exports = async function handler(req, res) {
@@ -279,13 +297,18 @@ module.exports = async function handler(req, res) {
     await createOrUpdateAuthUser(email, password, cadastroCompleto);
     await upsertLead(lead);
 
-    const checkoutUrl = await createMercadoPagoCheckout(cadastroCompleto);
+    const checkout = await createMercadoPagoCheckout(cadastroCompleto);
+
+    await supabaseRequest(`/rest/v1/clientes?mercadopago_preapproval_id=eq.${encodeURIComponent(externalReference)}`, {
+      method: "PATCH",
+      body: JSON.stringify({ mercadopago_plan_id: checkout.planId })
+    });
 
     send(res, 200, {
       ok: true,
       status: "pendente_pagamento",
       external_reference: externalReference,
-      checkout_url: checkoutUrl,
+      checkout_url: checkout.checkoutUrl,
       message: "Lead salvo. Continue para o pagamento."
     });
   } catch (error) {
