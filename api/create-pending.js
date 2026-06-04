@@ -1,7 +1,21 @@
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN;
+const SITE_URL = process.env.SITE_URL || "https://clyoraai.vercel.app";
 
-const ALLOWED_PLANS = new Set(["mensal", "trimestral", "semestral"]);
+const PLAN_IDS = {
+  mensal: "47cb3bbe00de45dea881d349b84fb30a",
+  trimestral: "91e59597a6ee4289a4c661b434e206e3",
+  semestral: "5f13c11db0fc45f384880c192410c93b"
+};
+
+const PLAN_REASONS = {
+  mensal: "Clyora AI - Plano Mensal",
+  trimestral: "Clyora AI - Plano Trimestral",
+  semestral: "Clyora AI - Plano Semestral"
+};
+
+const ALLOWED_PLANS = new Set(Object.keys(PLAN_IDS));
 
 const EMPTY_DETAILS = {
   instagram: "",
@@ -40,10 +54,15 @@ function cleanText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function buildFullCadastro(input) {
+function createReference() {
+  return `clyora_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function buildFullCadastro(input, externalReference) {
   const plano = cleanText(input.plano);
 
   return {
+    external_reference: externalReference,
     nome_empresa: cleanText(input.nome_empresa),
     nome_responsavel: cleanText(input.nome_responsavel),
     email: cleanText(input.email).toLowerCase(),
@@ -89,6 +108,8 @@ function buildLeadPayload(cadastro) {
     plano: cadastro.plano,
     status: "pendente_pagamento",
     data_cadastro: cadastro.data_cadastro,
+    mercadopago_preapproval_id: cadastro.external_reference,
+    pagamento_status: "aguardando_pagamento",
     atualizado_em: new Date().toISOString()
   };
 }
@@ -136,6 +157,7 @@ async function createOrUpdateAuthUser(email, password, cadastro) {
     nome_empresa: cadastro.nome_empresa,
     nome_responsavel: cadastro.nome_responsavel,
     plano: cadastro.plano,
+    external_reference: cadastro.external_reference,
     pre_cadastro_status: "aguardando_pagamento",
     pre_cadastro: cadastro
   };
@@ -191,14 +213,39 @@ async function upsertLead(lead) {
   });
 }
 
+async function createMercadoPagoCheckout(cadastro) {
+  const response = await fetch("https://api.mercadopago.com/preapproval", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${MERCADO_PAGO_ACCESS_TOKEN}`
+    },
+    body: JSON.stringify({
+      preapproval_plan_id: PLAN_IDS[cadastro.plano],
+      reason: PLAN_REASONS[cadastro.plano],
+      payer_email: cadastro.email,
+      external_reference: cadastro.external_reference,
+      back_url: `${SITE_URL}/pagamento-sucesso.html?ref=${encodeURIComponent(cadastro.external_reference)}`
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data?.message || "Erro ao criar checkout no Mercado Pago.");
+  }
+
+  return data.init_point || data.sandbox_init_point;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     send(res, 405, { error: "Metodo nao permitido." });
     return;
   }
 
-  if (!SUPABASE_SERVICE_ROLE_KEY) {
-    send(res, 500, { error: "SUPABASE_SERVICE_ROLE_KEY nao configurada na Vercel." });
+  if (!SUPABASE_SERVICE_ROLE_KEY || !MERCADO_PAGO_ACCESS_TOKEN) {
+    send(res, 500, { error: "Variaveis secretas ainda nao configuradas na Vercel." });
     return;
   }
 
@@ -225,15 +272,20 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const cadastroCompleto = buildFullCadastro(body);
+    const externalReference = createReference();
+    const cadastroCompleto = buildFullCadastro(body, externalReference);
     const lead = buildLeadPayload(cadastroCompleto);
 
     await createOrUpdateAuthUser(email, password, cadastroCompleto);
     await upsertLead(lead);
 
+    const checkoutUrl = await createMercadoPagoCheckout(cadastroCompleto);
+
     send(res, 200, {
       ok: true,
       status: "pendente_pagamento",
+      external_reference: externalReference,
+      checkout_url: checkoutUrl,
       message: "Lead salvo. Continue para o pagamento."
     });
   } catch (error) {
