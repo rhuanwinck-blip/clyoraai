@@ -9,6 +9,36 @@ function cleanText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+async function supabaseRequest(path, options = {}) {
+  const response = await fetch(`${SUPABASE_URL}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      ...(options.headers || {})
+    }
+  });
+
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : null;
+
+  if (!response.ok) {
+    const message = data?.msg || data?.message || data?.error_description || data?.error || "Erro no Supabase.";
+    throw new Error(message);
+  }
+
+  return data;
+}
+
+async function getClienteStatus(email) {
+  const data = await supabaseRequest(`/rest/v1/clientes?email=eq.${encodeURIComponent(email)}&select=status&limit=1`, {
+    method: "GET"
+  });
+
+  return Array.isArray(data) && data.length > 0 ? data[0].status : null;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     send(res, 405, { error: "Metodo nao permitido." });
@@ -29,6 +59,13 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const status = await getClienteStatus(email);
+
+    if (status !== "ativo") {
+      send(res, 403, { error: "Seu acesso ainda nao foi liberado. Confirme o pagamento primeiro." });
+      return;
+    }
+
     const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
       method: "POST",
       headers: {
