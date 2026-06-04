@@ -237,7 +237,14 @@
 .drawer-panel > p {
   color: var(--muted);
   line-height: 1.6;
-  margin-bottom: 26px;
+  margin-bottom: 16px;
+}
+
+.drawer-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 24px;
 }
 
 .drawer-grid {
