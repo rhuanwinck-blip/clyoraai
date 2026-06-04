@@ -188,6 +188,18 @@ async function updateClientByEmail(email, update) {
   });
 }
 
+async function safeUpdateClientByEmail(email, update) {
+  if (!email) return false;
+
+  try {
+    await updateClientByEmail(email, update);
+    return true;
+  } catch (error) {
+    console.error("Nao foi possivel registrar status do n8n:", error.message);
+    return false;
+  }
+}
+
 async function updateClientByReference(externalReference, update) {
   await supabaseRequest(`/rest/v1/clientes?mercadopago_preapproval_id=eq.${encodeURIComponent(externalReference)}`, {
     method: "PATCH",
@@ -262,12 +274,13 @@ module.exports = async function handler(req, res) {
       let n8n = { sent: false };
       try {
         n8n = await notifyN8n(update, "cliente_ativado");
-        await updateClientByEmail(cadastroEmail, {
+        await safeUpdateClientByEmail(cadastroEmail, {
           n8n_status: n8n.sent ? "enviado" : "nao_configurado",
           n8n_enviado_em: n8n.sent ? new Date().toISOString() : null
         });
       } catch (n8nError) {
-        await updateClientByEmail(cadastroEmail, {
+        n8n = { sent: false, error: n8nError.message };
+        await safeUpdateClientByEmail(cadastroEmail, {
           n8n_status: "erro",
           n8n_erro: n8nError.message,
           n8n_enviado_em: new Date().toISOString()
