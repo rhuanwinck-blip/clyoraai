@@ -1,8 +1,3 @@
-const SUPABASE_URL = "https://odmzoygdrllcypxnuooa.supabase.co";
-const SUPABASE_KEY = "sb_publishable_u9jyER7w06nT317cOKYgOQ_08ScqMIF";
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value || "-";
@@ -20,14 +15,13 @@ function showDashboardError(title, message) {
   document.getElementById("dashboardConteudo")?.classList.add("hidden");
 }
 
-async function getSession() {
-  const { data, error } = await supabase.auth.getSession();
-
-  if (error || !data?.session?.access_token) {
+function getStoredSession() {
+  try {
+    const raw = localStorage.getItem("clyora_session");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
     return null;
   }
-
-  return data.session;
 }
 
 async function fetchCliente(accessToken) {
@@ -48,9 +42,9 @@ async function fetchCliente(accessToken) {
 }
 
 async function carregarDashboard() {
-  const session = await getSession();
+  const session = getStoredSession();
 
-  if (!session) {
+  if (!session?.access_token) {
     window.location.href = "cliente.html";
     return;
   }
@@ -60,10 +54,14 @@ async function carregarDashboard() {
   try {
     cliente = await fetchCliente(session.access_token);
   } catch (error) {
+    localStorage.removeItem("clyora_session");
     showDashboardError(
-      "Cadastro nao encontrado",
-      error.message || "Nao encontramos os dados da sua empresa. Entre em contato com o suporte."
+      "Sessao expirada",
+      "Entre novamente para carregar os dados da sua empresa."
     );
+    setTimeout(() => {
+      window.location.href = "cliente.html";
+    }, 1200);
     return;
   }
 
@@ -125,8 +123,8 @@ async function carregarDashboard() {
 const logoutBtn = document.getElementById("logoutBtn");
 
 if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    await supabase.auth.signOut();
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("clyora_session");
     window.location.href = "cliente.html";
   });
 }
