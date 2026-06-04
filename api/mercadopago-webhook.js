@@ -5,12 +5,6 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 const MERCADO_PAGO_WEBHOOK_SECRET = process.env.MERCADO_PAGO_WEBHOOK_SECRET;
 
-const PLAN_BY_ID = {
-  "47cb3bbe00de45dea881d349b84fb30a": "mensal",
-  "91e59597a6ee4289a4c661b434e206e3": "trimestral",
-  "5f13c11db0fc45f384880c192410c93b": "semestral"
-};
-
 const ACTIVE_STATUSES = new Set(["authorized", "active"]);
 const INACTIVE_STATUSES = new Set(["paused", "cancelled", "cancelled_process", "expired"]);
 
@@ -74,8 +68,8 @@ async function supabaseRequest(path, options = {}) {
   return data;
 }
 
-async function fetchSubscription(preapprovalId) {
-  const response = await fetch(`https://api.mercadopago.com/preapproval/${encodeURIComponent(preapprovalId)}`, {
+async function mercadoPagoRequest(path) {
+  const response = await fetch(`https://api.mercadopago.com${path}`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${MERCADO_PAGO_ACCESS_TOKEN}`
@@ -85,10 +79,19 @@ async function fetchSubscription(preapprovalId) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data?.message || "Erro ao consultar assinatura no Mercado Pago.");
+    throw new Error(data?.message || "Erro ao consultar Mercado Pago.");
   }
 
   return data;
+}
+
+async function fetchSubscription(preapprovalId) {
+  return mercadoPagoRequest(`/preapproval/${encodeURIComponent(preapprovalId)}`);
+}
+
+async function fetchPlan(planId) {
+  if (!planId) return null;
+  return mercadoPagoRequest(`/preapproval_plan/${encodeURIComponent(planId)}`);
 }
 
 async function findAuthUserByEmail(email) {
@@ -199,22 +202,23 @@ module.exports = async function handler(req, res) {
   try {
     const subscription = await fetchSubscription(dataId);
     const payerEmail = String(subscription.payer_email || "").trim().toLowerCase();
-    const externalReference = String(subscription.external_reference || "").trim();
     const planId = subscription.preapproval_plan_id;
-    const plano = PLAN_BY_ID[planId] || null;
+    const plan = await fetchPlan(planId);
+    const externalReference = String(subscription.external_reference || plan?.external_reference || "").trim();
     const status = subscription.status;
 
     if (ACTIVE_STATUSES.has(status)) {
       const start = subscription.date_created ? new Date(subscription.date_created) : new Date();
-      const end = getEndDate(plano, start);
       const authUser = (await findAuthUserByReference(externalReference)) || (await findAuthUserByEmail(payerEmail));
       const preCadastro = authUser?.user_metadata?.pre_cadastro || {};
       const cadastroEmail = String(preCadastro.email || payerEmail || "").trim().toLowerCase();
+      const plano = preCadastro.plano || "mensal";
+      const end = getEndDate(plano, start);
       const update = {
         ...preCadastro,
         email: cadastroEmail,
         status: "ativo",
-        plano: plano || preCadastro.plano,
+        plano,
         mercadopago_preapproval_id: subscription.id,
         mercadopago_plan_id: planId,
         data_inicio: start.toISOString(),
@@ -229,7 +233,7 @@ module.exports = async function handler(req, res) {
         await updateClientByEmail(cadastroEmail, update);
       }
 
-      await markPreCadastroPaid(authUser, plano || preCadastro.plano);
+      await markPreCadastroPaid(authUser, plano);
 
       send(res, 200, { ok: true, activated: true, email: cadastroEmail, payer_email: payerEmail, external_reference: externalReference, plano });
       return;
