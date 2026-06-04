@@ -92,6 +92,8 @@ async function fetchSubscription(preapprovalId) {
 }
 
 async function findAuthUserByEmail(email) {
+  if (!email) return null;
+
   for (let page = 1; page <= 10; page += 1) {
     const data = await supabaseRequest(`/auth/v1/admin/users?page=${page}&per_page=100`, {
       method: "GET"
@@ -99,6 +101,24 @@ async function findAuthUserByEmail(email) {
 
     const users = Array.isArray(data?.users) ? data.users : Array.isArray(data) ? data : [];
     const found = users.find((user) => String(user.email || "").toLowerCase() === email);
+
+    if (found) return found;
+    if (users.length < 100) return null;
+  }
+
+  return null;
+}
+
+async function findAuthUserByReference(externalReference) {
+  if (!externalReference) return null;
+
+  for (let page = 1; page <= 10; page += 1) {
+    const data = await supabaseRequest(`/auth/v1/admin/users?page=${page}&per_page=100`, {
+      method: "GET"
+    });
+
+    const users = Array.isArray(data?.users) ? data.users : Array.isArray(data) ? data : [];
+    const found = users.find((user) => user.user_metadata?.external_reference === externalReference);
 
     if (found) return found;
     if (users.length < 100) return null;
@@ -141,6 +161,13 @@ async function updateClientByEmail(email, update) {
   });
 }
 
+async function updateClientByReference(externalReference, update) {
+  await supabaseRequest(`/rest/v1/clientes?mercadopago_preapproval_id=eq.${encodeURIComponent(externalReference)}`, {
+    method: "PATCH",
+    body: JSON.stringify(update)
+  });
+}
+
 function getEventDataId(req) {
   return req.query?.["data.id"] || req.query?.id || req.body?.data?.id || req.body?.id;
 }
@@ -172,24 +199,20 @@ module.exports = async function handler(req, res) {
   try {
     const subscription = await fetchSubscription(dataId);
     const payerEmail = String(subscription.payer_email || "").trim().toLowerCase();
+    const externalReference = String(subscription.external_reference || "").trim();
     const planId = subscription.preapproval_plan_id;
     const plano = PLAN_BY_ID[planId] || null;
     const status = subscription.status;
 
-    if (!payerEmail) {
-      send(res, 200, { ok: true, warning: "Assinatura sem payer_email retornado pelo Mercado Pago." });
-      return;
-    }
-
     if (ACTIVE_STATUSES.has(status)) {
       const start = subscription.date_created ? new Date(subscription.date_created) : new Date();
       const end = getEndDate(plano, start);
-      const authUser = await findAuthUserByEmail(payerEmail);
+      const authUser = (await findAuthUserByReference(externalReference)) || (await findAuthUserByEmail(payerEmail));
       const preCadastro = authUser?.user_metadata?.pre_cadastro || {};
-
-      await updateClientByEmail(payerEmail, {
+      const cadastroEmail = String(preCadastro.email || payerEmail || "").trim().toLowerCase();
+      const update = {
         ...preCadastro,
-        email: payerEmail,
+        email: cadastroEmail,
         status: "ativo",
         plano: plano || preCadastro.plano,
         mercadopago_preapproval_id: subscription.id,
@@ -198,31 +221,49 @@ module.exports = async function handler(req, res) {
         data_fim: end.toISOString(),
         pagamento_status: status,
         atualizado_em: new Date().toISOString()
-      });
+      };
+
+      if (externalReference) {
+        await updateClientByReference(externalReference, update);
+      } else if (cadastroEmail) {
+        await updateClientByEmail(cadastroEmail, update);
+      }
 
       await markPreCadastroPaid(authUser, plano || preCadastro.plano);
 
-      send(res, 200, { ok: true, activated: true, email: payerEmail, plano });
+      send(res, 200, { ok: true, activated: true, email: cadastroEmail, payer_email: payerEmail, external_reference: externalReference, plano });
       return;
     }
 
     if (INACTIVE_STATUSES.has(status)) {
-      await updateClientByEmail(payerEmail, {
+      const update = {
         status: "vencido",
         pagamento_status: status,
         atualizado_em: new Date().toISOString()
-      });
+      };
 
-      send(res, 200, { ok: true, deactivated: true, email: payerEmail });
+      if (externalReference) {
+        await updateClientByReference(externalReference, update);
+      } else if (payerEmail) {
+        await updateClientByEmail(payerEmail, update);
+      }
+
+      send(res, 200, { ok: true, deactivated: true, email: payerEmail, external_reference: externalReference });
       return;
     }
 
-    await updateClientByEmail(payerEmail, {
+    const update = {
       pagamento_status: status,
       atualizado_em: new Date().toISOString()
-    });
+    };
 
-    send(res, 200, { ok: true, status });
+    if (externalReference) {
+      await updateClientByReference(externalReference, update);
+    } else if (payerEmail) {
+      await updateClientByEmail(payerEmail, update);
+    }
+
+    send(res, 200, { ok: true, status, external_reference: externalReference });
   } catch (error) {
     send(res, 500, { error: error.message || "Erro ao processar webhook." });
   }
