@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagamento recebido | Clyora AI</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.24), transparent 28%),
+        radial-gradient(circle at 88% 14%, rgba(37, 99, 235, 0.18), transparent 30%),
+        linear-gradient(135deg, #07111f 0%, #0b1b35 48%, #102a56 100%);
+      color: #ffffff;
+    }
+
+    .return-page {
+      min-height: calc(100vh - 84px);
+      display: grid;
+      place-items: center;
+      padding: 70px 7%;
+    }
+
+    .return-card {
+      width: min(880px, 100%);
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--ink);
+      border-radius: 28px;
+      padding: clamp(30px, 5vw, 56px);
+      box-shadow: 0 36px 110px rgba(0, 0, 0, 0.30);
+      border: 1px solid rgba(125, 211, 252, 0.24);
+      text-align: center;
+    }
+
+    .success-mark {
+      width: 78px;
+      height: 78px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 24px;
+      border-radius: 24px;
+      color: #ffffff;
+      font-size: 38px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      box-shadow: 0 18px 45px rgba(19, 185, 129, 0.28);
+    }
+
+    .return-card h1 {
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.05;
+      margin-bottom: 18px;
+    }
+
+    .return-card p {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 670px;
+      margin: 0 auto 18px;
+    }
+
+    .return-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 34px 0;
+      text-align: left;
+    }
+
+    .return-steps div {
+      padding: 18px;
+      border-radius: 18px;
+      background: #f8fbff;
+      border: 1px solid rgba(37, 99, 235, 0.13);
+    }
+
+    .return-steps strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #10203a;
+    }
+
+    .return-steps span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .return-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .return-actions .btn-header {
+      background: #eef5ff;
+      color: var(--blue-strong);
+      box-shadow: none;
+    }
+
+    @media (max-width: 720px) {
+      .return-steps {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <span class="logo-mark">C</span>
+    <span class="logo-text">Clyora<span>AI</span></span>
+  </div>
+  <a href="index.html" class="btn-header">Início</a>
+</header>
+
+<main class="return-page">
+  <section class="return-card">
+    <div class="success-mark">✓</div>
+    <span class="section-label">Pagamento em processamento</span>
+    <h1>Recebemos seu retorno do Mercado Pago</h1>
+    <p>
+      Se o pagamento foi aprovado, a Clyora AI vai ativar seu cadastro automaticamente assim que o Mercado Pago confirmar a assinatura.
+    </p>
+    <p>
+      Em alguns casos, principalmente Pix ou análise do pagamento, a confirmação pode levar alguns instantes.
+    </p>
+
+    <div class="return-steps">
+      <div>
+        <strong>1. Confirmação</strong>
+        <span>O Mercado Pago envia o aviso de pagamento para a Clyora AI.</span>
+      </div>
+      <div>
+        <strong>2. Ativação</strong>
+        <span>Seu cadastro muda de pendente para ativo no sistema.</span>
+      </div>
+      <div>
+        <strong>3. Painel</strong>
+        <span>Depois disso você pode acessar sua área do cliente.</span>
+      </div>
+    </div>
+
+    <div class="return-actions">
+      <a href="login.html" class="btn-primary">Entrar no painel</a>
+      <a href="index.html" class="btn-header">Voltar ao site</a>
+    </div>
+  </section>
+</main>
+</body>
+</html>
