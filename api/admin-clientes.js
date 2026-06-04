@@ -1,6 +1,7 @@
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_ACCESS_CODE = process.env.ADMIN_ACCESS_CODE || process.env.ADMIN_TOKEN;
+const MAX_CLIENTES = 500;
 
 function send(res, status, body) {
   res.status(status).json(body);
@@ -81,7 +82,7 @@ module.exports = async function handler(req, res) {
   try {
     const status = safeText(req.query?.status);
     const query = safeText(req.query?.q).toLowerCase();
-    const limit = Math.min(Number(req.query?.limit || 200), 500);
+    const limit = Math.min(Number(req.query?.limit || 200), MAX_CLIENTES);
     let path = `/rest/v1/clientes?select=*&order=data_cadastro.desc.nullslast&limit=${limit}`;
 
     if (status && status !== "todos") {
