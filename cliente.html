@@ -2,16 +2,19 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Área do Cliente | Clyora AI</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
 <header class="header">
-  <div class="logo">Clyora<span>AI</span></div>
+  <div class="logo">
+    <span class="logo-mark">C</span>
+    <span class="logo-text">Clyora<span>AI</span></span>
+  </div>
   <a href="index.html" class="btn-header">Início</a>
 </header>
 
@@ -23,22 +26,19 @@
 
     <div id="authMessage" class="auth-message"></div>
 
-    <form>
-      <label>E-mail</label>
-      <input id="email" type="email" placeholder="seu@email.com"/>
+    <form id="loginForm">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" placeholder="seu@email.com" required />
 
-      <label>Senha</label>
-      <input id="senha" type="password" placeholder="Digite sua senha"/>
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" placeholder="Digite sua senha" required />
 
-      <button type="button" id="btnEntrar" class="btn-primary full">
-        Entrar
-      </button>
+      <button type="submit" id="btnEntrar" class="btn-primary full">Entrar</button>
     </form>
   </div>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="cliente.js"></script>
-
 </body>
 </html>
