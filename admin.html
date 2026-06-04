@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin CRM | Clyora AI</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="admin-body">
+<header class="header admin-header">
+  <div class="logo">
+    <span class="logo-mark">C</span>
+    <span class="logo-text">Clyora<span>AI</span></span>
+  </div>
+  <a href="index.html" class="btn-header">Site</a>
+</header>
+
+<main class="admin-shell">
+  <section id="adminLogin" class="admin-login">
+    <div class="login-box admin-login-box">
+      <span class="section-label">Admin CRM</span>
+      <h1>Acesso administrativo</h1>
+      <p class="subtitle">Entre com o código de admin para visualizar leads, clientes pagos e dados de implantação.</p>
+
+      <div id="adminMessage" class="auth-message"></div>
+
+      <form id="adminLoginForm">
+        <label for="adminCode">Código de admin</label>
+        <input id="adminCode" type="password" placeholder="Digite o código de acesso" required />
+        <button type="submit" class="btn-primary full">Entrar no CRM</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="adminApp" class="admin-app hidden">
+    <div class="admin-title-row">
+      <div>
+        <span class="section-label">Controle interno</span>
+        <h1>CRM Clyora AI</h1>
+        <p>Gerencie leads, assinaturas e dados enviados pelos clientes.</p>
+      </div>
+      <div class="admin-actions">
+        <button id="refreshAdmin" class="small-btn">Atualizar</button>
+        <button id="logoutAdmin" class="btn-header">Sair</button>
+      </div>
+    </div>
+
+    <div class="admin-stats">
+      <div class="stat-card">
+        <span>Total</span>
+        <strong id="statTotal">0</strong>
+      </div>
+      <div class="stat-card success">
+        <span>Ativos</span>
+        <strong id="statAtivos">0</strong>
+      </div>
+      <div class="stat-card warning">
+        <span>Pendentes</span>
+        <strong id="statPendentes">0</strong>
+      </div>
+      <div class="stat-card danger">
+        <span>Vencidos</span>
+        <strong id="statVencidos">0</strong>
+      </div>
+    </div>
+
+    <div class="admin-toolbar">
+      <div class="field compact-field">
+        <label for="adminSearch">Buscar</label>
+        <input id="adminSearch" type="search" placeholder="Nome, telefone, e-mail, plano..." />
+      </div>
+
+      <div class="field compact-field">
+        <label for="adminStatus">Status</label>
+        <select id="adminStatus">
+          <option value="todos">Todos</option>
+          <option value="pendente_pagamento">Pendentes</option>
+          <option value="ativo">Ativos</option>
+          <option value="vencido">Vencidos</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="adminError" class="auth-message"></div>
+
+    <section class="admin-table-card">
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Telefone</th>
+              <th>Plano</th>
+              <th>Status</th>
+              <th>Cadastro</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="clientesTableBody">
+            <tr>
+              <td colspan="6">Carregando...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+</main>
+
+<aside id="clientDrawer" class="client-drawer" aria-hidden="true">
+  <div class="drawer-panel">
+    <button id="closeDrawer" class="drawer-close">×</button>
+    <span id="drawerStatus" class="status inactive">status</span>
+    <h2 id="drawerName">Cliente</h2>
+    <p id="drawerMeta">-</p>
+
+    <div class="drawer-grid" id="drawerContent"></div>
+  </div>
+</aside>
+
+<script src="admin.js"></script>
+</body>
+</html>
