@@ -17,8 +17,10 @@ const drawerStatus = document.getElementById("drawerStatus");
 const drawerName = document.getElementById("drawerName");
 const drawerMeta = document.getElementById("drawerMeta");
 const drawerContent = document.getElementById("drawerContent");
+const sendN8n = document.getElementById("sendN8n");
 
 let clientes = [];
+let selectedCliente = null;
 
 function getCode() {
   return localStorage.getItem(STORAGE_KEY) || "";
@@ -115,10 +117,16 @@ function section(title, rows) {
 }
 
 function openDetails(cliente) {
+  selectedCliente = cliente;
   drawerStatus.textContent = moneyStatus(cliente.status_exibicao);
   drawerStatus.className = cliente.status_exibicao === "ativo" ? "status active" : "status inactive";
   drawerName.textContent = cliente.nome_exibicao;
   drawerMeta.textContent = `${visibleValue(cliente.plano_exibicao)} • ${visibleValue(cliente.email)} • ${visibleValue(cliente.telefone_exibicao)}`;
+
+  if (sendN8n) {
+    sendN8n.disabled = !cliente.email;
+    sendN8n.textContent = "Enviar para n8n";
+  }
 
   drawerContent.innerHTML = [
     section("Cadastro", [
@@ -201,6 +209,44 @@ async function loadClientes() {
   showApp();
 }
 
+async function sendSelectedToN8n() {
+  if (!selectedCliente?.email) {
+    showMessage(adminError, "Esse cliente ainda não tem e-mail para envio.", "error");
+    return;
+  }
+
+  const code = getCode();
+  const originalText = sendN8n.textContent;
+  sendN8n.disabled = true;
+  sendN8n.textContent = "Enviando...";
+  showMessage(adminError, "Enviando cliente para o n8n...", "info");
+
+  try {
+    const response = await fetch("/api/admin-enviar-n8n", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${code}`
+      },
+      body: JSON.stringify({ email: selectedCliente.email })
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error(payload.error || "Erro ao enviar cliente para o n8n.");
+    }
+
+    showMessage(adminError, "Cliente enviado para o n8n com sucesso.", "success");
+    sendN8n.textContent = "Enviado";
+  } catch (error) {
+    showMessage(adminError, error.message || "Erro ao enviar cliente para o n8n.", "error");
+    sendN8n.textContent = originalText;
+  } finally {
+    sendN8n.disabled = false;
+  }
+}
+
 adminLoginForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const code = adminCodeInput.value.trim();
@@ -220,6 +266,8 @@ clientesTableBody?.addEventListener("click", (event) => {
   const cliente = clientes[Number(button.dataset.index)];
   if (cliente) openDetails(cliente);
 });
+
+sendN8n?.addEventListener("click", sendSelectedToN8n);
 
 closeDrawer?.addEventListener("click", () => {
   clientDrawer.classList.remove("active");
@@ -243,6 +291,7 @@ adminStatus?.addEventListener("change", loadClientes);
 logoutAdmin?.addEventListener("click", () => {
   clearCode();
   clientes = [];
+  selectedCliente = null;
   showLogin();
 });
 
