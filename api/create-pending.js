@@ -40,16 +40,55 @@ function cleanText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function buildLeadPayload(input) {
+function buildFullCadastro(input) {
+  const plano = cleanText(input.plano);
+
   return {
-    ...EMPTY_DETAILS,
     nome_empresa: cleanText(input.nome_empresa),
     nome_responsavel: cleanText(input.nome_responsavel),
     email: cleanText(input.email).toLowerCase(),
     whatsapp: cleanText(input.whatsapp),
-    plano: cleanText(input.plano),
+    instagram: cleanText(input.instagram),
+    nicho: cleanText(input.nicho),
+    tipo_atendimento: cleanText(input.tipo_atendimento),
+    regiao_atendimento: cleanText(input.regiao_atendimento),
+    publico_alvo: cleanText(input.publico_alvo),
+    servicos: cleanText(input.servicos),
+    vende_produtos: cleanText(input.vende_produtos),
+    produto_1_nome: cleanText(input.produto_1_nome),
+    produto_1_descricao: cleanText(input.produto_1_descricao),
+    produto_1_preco_tipo: cleanText(input.produto_1_preco_tipo),
+    produto_1_valor: cleanText(input.produto_1_valor),
+    produto_2_nome: cleanText(input.produto_2_nome),
+    produto_2_descricao: cleanText(input.produto_2_descricao),
+    produto_2_preco_tipo: cleanText(input.produto_2_preco_tipo),
+    produto_2_valor: cleanText(input.produto_2_valor),
+    produto_3_nome: cleanText(input.produto_3_nome),
+    produto_3_descricao: cleanText(input.produto_3_descricao),
+    produto_3_preco_tipo: cleanText(input.produto_3_preco_tipo),
+    produto_3_valor: cleanText(input.produto_3_valor),
+    pode_responder: cleanText(input.pode_responder),
+    nao_pode_responder: cleanText(input.nao_pode_responder),
+    quando_encaminhar: cleanText(input.quando_encaminhar),
+    tom_voz: cleanText(input.tom_voz),
+    marketing_opcao: cleanText(input.marketing_opcao),
+    marketing_frequencia: cleanText(input.marketing_frequencia),
+    marketing_frequencia_personalizada: cleanText(input.marketing_frequencia_personalizada),
+    plano,
+    data_cadastro: new Date().toISOString()
+  };
+}
+
+function buildLeadPayload(cadastro) {
+  return {
+    ...EMPTY_DETAILS,
+    nome_empresa: cadastro.nome_empresa,
+    nome_responsavel: cadastro.nome_responsavel,
+    email: cadastro.email,
+    whatsapp: cadastro.whatsapp,
+    plano: cadastro.plano,
     status: "pendente_pagamento",
-    data_cadastro: new Date().toISOString(),
+    data_cadastro: cadastro.data_cadastro,
     atualizado_em: new Date().toISOString()
   };
 }
@@ -76,7 +115,31 @@ async function supabaseRequest(path, options = {}) {
   return data;
 }
 
-async function createAuthUser(email, password, metadata) {
+async function findAuthUserByEmail(email) {
+  for (let page = 1; page <= 10; page += 1) {
+    const data = await supabaseRequest(`/auth/v1/admin/users?page=${page}&per_page=100`, {
+      method: "GET"
+    });
+
+    const users = Array.isArray(data?.users) ? data.users : Array.isArray(data) ? data : [];
+    const found = users.find((user) => String(user.email || "").toLowerCase() === email);
+
+    if (found) return found;
+    if (users.length < 100) return null;
+  }
+
+  return null;
+}
+
+async function createOrUpdateAuthUser(email, password, cadastro) {
+  const userMetadata = {
+    nome_empresa: cadastro.nome_empresa,
+    nome_responsavel: cadastro.nome_responsavel,
+    plano: cadastro.plano,
+    pre_cadastro_status: "aguardando_pagamento",
+    pre_cadastro: cadastro
+  };
+
   try {
     await supabaseRequest("/auth/v1/admin/users", {
       method: "POST",
@@ -84,7 +147,7 @@ async function createAuthUser(email, password, metadata) {
         email,
         password,
         email_confirm: true,
-        user_metadata: metadata
+        user_metadata: userMetadata
       })
     });
   } catch (error) {
@@ -92,6 +155,20 @@ async function createAuthUser(email, password, metadata) {
     if (!message.includes("already") && !message.includes("registered") && !message.includes("exists")) {
       throw error;
     }
+
+    const existingUser = await findAuthUserByEmail(email);
+    if (!existingUser?.id) return;
+
+    await supabaseRequest(`/auth/v1/admin/users/${existingUser.id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        password,
+        user_metadata: {
+          ...(existingUser.user_metadata || {}),
+          ...userMetadata
+        }
+      })
+    });
   }
 }
 
@@ -148,14 +225,10 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const lead = buildLeadPayload(body);
+    const cadastroCompleto = buildFullCadastro(body);
+    const lead = buildLeadPayload(cadastroCompleto);
 
-    await createAuthUser(email, password, {
-      nome_empresa: lead.nome_empresa,
-      nome_responsavel: lead.nome_responsavel,
-      plano: lead.plano
-    });
-
+    await createOrUpdateAuthUser(email, password, cadastroCompleto);
     await upsertLead(lead);
 
     send(res, 200, {
