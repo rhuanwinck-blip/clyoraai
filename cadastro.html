@@ -6,267 +6,443 @@
 
   <title>Cadastro | Clyora AI</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="cadastro.css" />
 </head>
 
-<body>
+<body class="cadastro-page-body">
 
-<header class="header">
-  <div class="logo">Clyora<span>AI</span></div>
+<header class="header cadastro-header">
+  <div class="logo">
+    <span class="logo-mark">C</span>
+    <span class="logo-text">Clyora<span>AI</span></span>
+  </div>
   <a href="index.html" class="btn-header">Voltar</a>
 </header>
 
-<section class="form-page">
-  <div class="form-container">
-    <span class="section-label">Cadastro inicial</span>
-    <h1>Configure sua empresa antes do pagamento</h1>
-
-    <p class="subtitle">
-      Essas informações serão usadas para configurar a IA, orientar o atendimento e criar o marketing da sua empresa com segurança.
-    </p>
-
-    <div class="warning-box">
-      <strong>Importante antes de continuar</strong>
+<section class="form-page cadastro-page">
+  <div class="form-shell">
+    <aside class="form-aside" aria-label="Resumo do cadastro">
+      <span class="section-label">Cadastro seguro</span>
+      <h1>Configure sua operação antes do pagamento</h1>
       <p>
-        Para o sistema funcionar corretamente, sua empresa precisa ter WhatsApp Business e acesso às redes sociais informadas.
-        Após o pagamento, você poderá conectar suas contas oficialmente.
-      </p>
-    </div>
-
-    <form id="cadastroForm">
-      <h2>Dados da empresa</h2>
-
-      <label>Nome da empresa</label>
-      <input id="nome_empresa" name="nome_empresa" type="text" required placeholder="Ex: Oficina Silva" />
-
-      <label>Nome do responsável</label>
-      <input id="nome_responsavel" name="nome_responsavel" type="text" required placeholder="Nome de quem administra" />
-
-      <label>E-mail</label>
-      <input id="email" name="email" type="email" required placeholder="email@empresa.com" />
-
-      <label>Crie uma senha de acesso</label>
-      <input id="senha_acesso" name="senha_acesso" type="password" required placeholder="Crie uma senha segura" />
-
-      <label>Confirme sua senha</label>
-      <input id="confirmar_senha" name="confirmar_senha" type="password" required placeholder="Digite a senha novamente" />
-
-      <label>WhatsApp da empresa</label>
-      <input id="whatsapp" name="whatsapp" type="text" required placeholder="(00) 00000-0000" />
-
-      <label>Instagram da empresa</label>
-      <input id="instagram" name="instagram" type="text" placeholder="@suaempresa" />
-
-      <label>Qual é o nicho da sua empresa?</label>
-      <input id="nicho" name="nicho" type="text" required placeholder="Ex: estética, peças agrícolas, moda, educação..." />
-
-      <label>Você atende online, presencial ou os dois?</label>
-      <select id="tipo_atendimento" name="tipo_atendimento" required>
-        <option value="">Selecione uma opção</option>
-        <option>Online</option>
-        <option>Presencial</option>
-        <option>Online e presencial</option>
-      </select>
-
-      <label>Cidade/estado ou região de atendimento</label>
-      <input id="regiao_atendimento" name="regiao_atendimento" type="text" placeholder="Ex: Brasil inteiro, Curitiba/PR..." />
-
-      <label>Público-alvo</label>
-      <textarea id="publico_alvo" name="publico_alvo" required placeholder="Descreva quem você quer atingir. Ex: donos de empresa, produtores rurais, mulheres de 25 a 45 anos..."></textarea>
-
-      <label>Envie a logo ou imagem da marca</label>
-      <input id="logo_url" name="logo_url" type="file" accept="image/*" />
-
-      <h2>Serviços</h2>
-
-      <p class="helper">
-        Informe os serviços que sua empresa presta. A IA usará isso para orientar respostas e criar materiais de divulgação.
+        Preencha os dados principais da sua empresa para que a Clyora AI possa preparar o atendimento, os limites da IA e a base de marketing com mais precisão.
       </p>
 
-      <label>Quais serviços sua empresa oferece?</label>
-      <textarea id="servicos" name="servicos" required placeholder="Ex: manutenção, consultoria, limpeza, instalação, estética, atendimento técnico..."></textarea>
-
-      <h2>Produtos ou peças</h2>
-
-      <label>Sua empresa vende produtos ou peças?</label>
-      <select id="vendeProdutos" name="vende_produtos" required>
-        <option value="">Selecione uma opção</option>
-        <option value="sim">Sim</option>
-        <option value="nao">Não vendo produtos/peças</option>
-        <option value="nao_informar">Prefiro não informar</option>
-      </select>
-
-      <div id="produtosBox" class="hidden">
-        <p class="helper">
-          Cadastre os produtos, peças ou itens principais. Se tiver muitos, coloque apenas os mais vendidos ou mais importantes.
-          A IA só responderá sobre itens cadastrados. Se perguntarem sobre algo não cadastrado, será encaminhado para atendimento humano.
-        </p>
-
-        <label>Produto/peça/serviço principal 1</label>
-        <input id="produto_1_nome" name="produto_1_nome" type="text" placeholder="Nome do item" />
-        <textarea id="produto_1_descricao" name="produto_1_descricao" placeholder="Descrição do item"></textarea>
-        <select id="produto_1_preco_tipo" name="produto_1_preco_tipo">
-          <option>Preço sob consulta</option>
-          <option>Valor fixo informado abaixo</option>
-        </select>
-        <input id="produto_1_valor" name="produto_1_valor" type="text" placeholder="Valor, se desejar informar" />
-
-        <label>Produto/peça/serviço principal 2</label>
-        <input id="produto_2_nome" name="produto_2_nome" type="text" placeholder="Nome do item" />
-        <textarea id="produto_2_descricao" name="produto_2_descricao" placeholder="Descrição do item"></textarea>
-        <select id="produto_2_preco_tipo" name="produto_2_preco_tipo">
-          <option>Preço sob consulta</option>
-          <option>Valor fixo informado abaixo</option>
-        </select>
-        <input id="produto_2_valor" name="produto_2_valor" type="text" placeholder="Valor, se desejar informar" />
-
-        <label>Produto/peça/serviço principal 3</label>
-        <input id="produto_3_nome" name="produto_3_nome" type="text" placeholder="Nome do item" />
-        <textarea id="produto_3_descricao" name="produto_3_descricao" placeholder="Descrição do item"></textarea>
-        <select id="produto_3_preco_tipo" name="produto_3_preco_tipo">
-          <option>Preço sob consulta</option>
-          <option>Valor fixo informado abaixo</option>
-        </select>
-        <input id="produto_3_valor" name="produto_3_valor" type="text" placeholder="Valor, se desejar informar" />
+      <div class="trust-grid">
+        <div>
+          <strong>LGPD</strong>
+          <span>Dados usados para configurar e operar o serviço.</span>
+        </div>
+        <div>
+          <strong>Mercado Pago</strong>
+          <span>Pagamento processado por ambiente externo seguro.</span>
+        </div>
+        <div>
+          <strong>Ativação</strong>
+          <span>Seu acesso é liberado após confirmação do pagamento.</span>
+        </div>
       </div>
 
-      <h2>Limites da IA</h2>
-
-      <label>Sobre o que a IA pode responder?</label>
-      <textarea id="pode_responder" name="pode_responder" required placeholder="Ex: serviços cadastrados, produtos cadastrados, horários, formas de contato, informações comerciais..."></textarea>
-
-      <label>Sobre o que a IA NÃO pode responder?</label>
-      <textarea id="nao_pode_responder" name="nao_pode_responder" required placeholder="Ex: dados internos, fornecedores, faturamento, problemas da empresa, negociações especiais..."></textarea>
-
-      <label>Quando a IA deve encaminhar para atendimento humano?</label>
-      <textarea id="quando_encaminhar" name="quando_encaminhar" required placeholder="Ex: quando não souber, quando perguntarem item não cadastrado, quando pedirem desconto, quando reclamarem..."></textarea>
-
-      <label>Tom de voz da IA</label>
-      <select id="tom_voz" name="tom_voz" required>
-        <option value="">Selecione uma opção</option>
-        <option>Profissional</option>
-        <option>Amigável</option>
-        <option>Premium/luxuoso</option>
-        <option>Direto</option>
-        <option>Descontraído</option>
-        <option>Técnico</option>
-      </select>
-
-      <h2>Marketing da empresa</h2>
-
-      <label>Deseja que a Clyora crie materiais de divulgação para sua empresa?</label>
-      <select id="marketing_opcao" name="marketing_opcao" required>
-        <option value="">Selecione uma opção</option>
-        <option>Sim, criar e publicar automaticamente</option>
-        <option>Sim, criar, mas quero aprovar antes</option>
-        <option>Não quero marketing automático</option>
-      </select>
-
-      <label>Com qual frequência deseja que o marketing seja gerado?</label>
-      <select id="marketing_frequencia" name="marketing_frequencia" required>
-        <option value="">Selecione uma opção</option>
-        <option>1 vez por semana</option>
-        <option>2 vezes por semana</option>
-        <option>3 vezes por semana</option>
-        <option>Todos os dias</option>
-        <option>Personalizado</option>
-      </select>
-
-      <label>Se escolheu personalizado, escreva a frequência desejada</label>
-      <input id="marketing_frequencia_personalizada" name="marketing_frequencia_personalizada" type="text" placeholder="Ex: a cada 10 dias, toda segunda e sexta..." />
-
-      <div class="warning-box">
+      <div class="aside-card">
+        <strong>Antes de continuar</strong>
         <p>
-          Os materiais gerados pela plataforma podem conter uma assinatura discreta da tecnologia utilizada,
-          como “Powered by Clyora AI”.
+          Tenha em mãos os dados do negócio, WhatsApp Business, Instagram e as principais regras de atendimento da empresa.
+        </p>
+      </div>
+    </aside>
+
+    <div class="form-container cadastro-card">
+      <div class="form-card-header">
+        <span class="section-label">Cadastro inicial</span>
+        <h2>Dados para implantação</h2>
+        <p class="subtitle">
+          Quanto melhor o cadastro, mais natural, seguro e útil será o atendimento automatizado.
         </p>
       </div>
 
-      <h2>Confirmações</h2>
+      <div class="warning-box refined-warning">
+        <strong>Importante</strong>
+        <p>
+          Para o sistema funcionar corretamente, sua empresa precisa ter WhatsApp Business e acesso às redes sociais informadas.
+          Após o pagamento, você poderá conectar suas contas oficialmente.
+        </p>
+      </div>
 
-      <label class="checkbox">
-        <input type="checkbox" required />
-        Confirmo que possuo WhatsApp Business e acesso às redes sociais informadas.
-      </label>
+      <form id="cadastroForm" class="professional-form">
+        <section class="form-section">
+          <div class="section-heading">
+            <span>01</span>
+            <div>
+              <h2>Dados da empresa</h2>
+              <p>Informações básicas para criar seu acesso e identificar a operação.</p>
+            </div>
+          </div>
 
-      <label class="checkbox">
-        <input type="checkbox" required />
-        Entendo que a IA responderá apenas com base nas informações cadastradas.
-      </label>
+          <div class="field-grid">
+            <div class="field">
+              <label for="nome_empresa">Nome da empresa</label>
+              <input id="nome_empresa" name="nome_empresa" type="text" required placeholder="Ex: Oficina Silva" />
+            </div>
 
-      <label class="checkbox">
-        <input type="checkbox" required />
-        Entendo que, se perguntarem sobre algo não cadastrado, o atendimento será encaminhado para humano.
-      </label>
+            <div class="field">
+              <label for="nome_responsavel">Nome do responsável</label>
+              <input id="nome_responsavel" name="nome_responsavel" type="text" required placeholder="Nome de quem administra" />
+            </div>
 
-      <label class="checkbox">
-        <input type="checkbox" required />
-        Li e aceito os 
-        <button type="button" class="terms-link" id="openTerms">TERMOS DE USO</button>, 
-        Política de Privacidade e regras de operação da plataforma.
-      </label>
+            <div class="field">
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" required placeholder="email@empresa.com" />
+            </div>
 
-      <button type="submit" class="btn-primary full">Continuar para pagamento</button>
-    </form>
+            <div class="field">
+              <label for="whatsapp">WhatsApp da empresa</label>
+              <input id="whatsapp" name="whatsapp" type="text" required placeholder="(00) 00000-0000" />
+            </div>
+
+            <div class="field">
+              <label for="senha_acesso">Crie uma senha de acesso</label>
+              <input id="senha_acesso" name="senha_acesso" type="password" required placeholder="Crie uma senha segura" />
+            </div>
+
+            <div class="field">
+              <label for="confirmar_senha">Confirme sua senha</label>
+              <input id="confirmar_senha" name="confirmar_senha" type="password" required placeholder="Digite a senha novamente" />
+            </div>
+
+            <div class="field">
+              <label for="instagram">Instagram da empresa</label>
+              <input id="instagram" name="instagram" type="text" placeholder="@suaempresa" />
+            </div>
+
+            <div class="field">
+              <label for="nicho">Nicho da empresa</label>
+              <input id="nicho" name="nicho" type="text" required placeholder="Ex: estética, peças agrícolas, moda..." />
+            </div>
+
+            <div class="field">
+              <label for="tipo_atendimento">Tipo de atendimento</label>
+              <select id="tipo_atendimento" name="tipo_atendimento" required>
+                <option value="">Selecione uma opção</option>
+                <option>Online</option>
+                <option>Presencial</option>
+                <option>Online e presencial</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="regiao_atendimento">Região de atendimento</label>
+              <input id="regiao_atendimento" name="regiao_atendimento" type="text" placeholder="Ex: Brasil inteiro, Curitiba/PR..." />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="publico_alvo">Público-alvo</label>
+            <textarea id="publico_alvo" name="publico_alvo" required placeholder="Descreva quem você quer atingir. Ex: donos de empresa, produtores rurais, mulheres de 25 a 45 anos..."></textarea>
+          </div>
+
+          <div class="field file-field">
+            <label for="logo_url">Logo ou imagem da marca</label>
+            <input id="logo_url" name="logo_url" type="file" accept="image/*" />
+            <small>Use uma imagem limpa da marca. Ela ajuda na criação dos materiais visuais.</small>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <div class="section-heading">
+            <span>02</span>
+            <div>
+              <h2>Serviços e produtos</h2>
+              <p>Base que a IA usará para responder clientes sem inventar informações.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="servicos">Quais serviços sua empresa oferece?</label>
+            <textarea id="servicos" name="servicos" required placeholder="Ex: manutenção, consultoria, limpeza, instalação, estética, atendimento técnico..."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="vendeProdutos">Sua empresa vende produtos ou peças?</label>
+            <select id="vendeProdutos" name="vende_produtos" required>
+              <option value="">Selecione uma opção</option>
+              <option value="sim">Sim</option>
+              <option value="nao">Não vendo produtos/peças</option>
+              <option value="nao_informar">Prefiro não informar</option>
+            </select>
+          </div>
+
+          <div id="produtosBox" class="hidden product-panel">
+            <p class="helper">
+              Cadastre os produtos, peças ou itens principais. Se tiver muitos, coloque apenas os mais vendidos ou mais importantes.
+              A IA só responderá sobre itens cadastrados.
+            </p>
+
+            <div class="product-group">
+              <label for="produto_1_nome">Produto/peça/serviço principal 1</label>
+              <input id="produto_1_nome" name="produto_1_nome" type="text" placeholder="Nome do item" />
+              <textarea id="produto_1_descricao" name="produto_1_descricao" placeholder="Descrição do item"></textarea>
+              <select id="produto_1_preco_tipo" name="produto_1_preco_tipo">
+                <option>Preço sob consulta</option>
+                <option>Valor fixo informado abaixo</option>
+              </select>
+              <input id="produto_1_valor" name="produto_1_valor" type="text" placeholder="Valor, se desejar informar" />
+            </div>
+
+            <div class="product-group">
+              <label for="produto_2_nome">Produto/peça/serviço principal 2</label>
+              <input id="produto_2_nome" name="produto_2_nome" type="text" placeholder="Nome do item" />
+              <textarea id="produto_2_descricao" name="produto_2_descricao" placeholder="Descrição do item"></textarea>
+              <select id="produto_2_preco_tipo" name="produto_2_preco_tipo">
+                <option>Preço sob consulta</option>
+                <option>Valor fixo informado abaixo</option>
+              </select>
+              <input id="produto_2_valor" name="produto_2_valor" type="text" placeholder="Valor, se desejar informar" />
+            </div>
+
+            <div class="product-group">
+              <label for="produto_3_nome">Produto/peça/serviço principal 3</label>
+              <input id="produto_3_nome" name="produto_3_nome" type="text" placeholder="Nome do item" />
+              <textarea id="produto_3_descricao" name="produto_3_descricao" placeholder="Descrição do item"></textarea>
+              <select id="produto_3_preco_tipo" name="produto_3_preco_tipo">
+                <option>Preço sob consulta</option>
+                <option>Valor fixo informado abaixo</option>
+              </select>
+              <input id="produto_3_valor" name="produto_3_valor" type="text" placeholder="Valor, se desejar informar" />
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <div class="section-heading">
+            <span>03</span>
+            <div>
+              <h2>Limites da IA</h2>
+              <p>Defina o que a IA pode dizer e quando ela deve passar para atendimento humano.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="pode_responder">Sobre o que a IA pode responder?</label>
+            <textarea id="pode_responder" name="pode_responder" required placeholder="Ex: serviços cadastrados, produtos cadastrados, horários, formas de contato..."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="nao_pode_responder">Sobre o que a IA não pode responder?</label>
+            <textarea id="nao_pode_responder" name="nao_pode_responder" required placeholder="Ex: dados internos, fornecedores, faturamento, negociações especiais..."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="quando_encaminhar">Quando encaminhar para atendimento humano?</label>
+            <textarea id="quando_encaminhar" name="quando_encaminhar" required placeholder="Ex: quando não souber, quando perguntarem item não cadastrado, quando pedirem desconto..."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="tom_voz">Tom de voz da IA</label>
+            <select id="tom_voz" name="tom_voz" required>
+              <option value="">Selecione uma opção</option>
+              <option>Profissional</option>
+              <option>Amigável</option>
+              <option>Premium/luxuoso</option>
+              <option>Direto</option>
+              <option>Descontraído</option>
+              <option>Técnico</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <div class="section-heading">
+            <span>04</span>
+            <div>
+              <h2>Marketing da empresa</h2>
+              <p>Escolha como a Clyora pode apoiar sua divulgação.</p>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="marketing_opcao">Deseja materiais de divulgação?</label>
+              <select id="marketing_opcao" name="marketing_opcao" required>
+                <option value="">Selecione uma opção</option>
+                <option>Sim, criar e publicar automaticamente</option>
+                <option>Sim, criar, mas quero aprovar antes</option>
+                <option>Não quero marketing automático</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="marketing_frequencia">Frequência do marketing</label>
+              <select id="marketing_frequencia" name="marketing_frequencia" required>
+                <option value="">Selecione uma opção</option>
+                <option>1 vez por semana</option>
+                <option>2 vezes por semana</option>
+                <option>3 vezes por semana</option>
+                <option>Todos os dias</option>
+                <option>Personalizado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="marketing_frequencia_personalizada">Se escolheu personalizado, escreva a frequência desejada</label>
+            <input id="marketing_frequencia_personalizada" name="marketing_frequencia_personalizada" type="text" placeholder="Ex: a cada 10 dias, toda segunda e sexta..." />
+          </div>
+
+          <div class="warning-box refined-warning soft">
+            <p>
+              Os materiais gerados pela plataforma podem conter uma assinatura discreta da tecnologia utilizada, como “Powered by Clyora AI”.
+            </p>
+          </div>
+        </section>
+
+        <section class="form-section legal-section">
+          <div class="section-heading">
+            <span>05</span>
+            <div>
+              <h2>Confirmações legais</h2>
+              <p>Leia e confirme as regras antes de seguir para o pagamento.</p>
+            </div>
+          </div>
+
+          <div class="legal-checks">
+            <label class="checkbox">
+              <input type="checkbox" required />
+              Confirmo que possuo WhatsApp Business e acesso às redes sociais informadas.
+            </label>
+
+            <label class="checkbox">
+              <input type="checkbox" required />
+              Entendo que a IA responderá apenas com base nas informações cadastradas.
+            </label>
+
+            <label class="checkbox">
+              <input type="checkbox" required />
+              Entendo que, se perguntarem sobre algo não cadastrado, o atendimento será encaminhado para humano.
+            </label>
+
+            <label class="checkbox legal-acceptance">
+              <input type="checkbox" required />
+              <span>
+                Li e aceito os
+                <button type="button" class="terms-link" id="openTerms">Termos de Uso e Política de Privacidade</button>
+                da Clyora AI.
+              </span>
+            </label>
+          </div>
+
+          <p class="legal-note">
+            Ao continuar, você concorda com a coleta e uso dos dados informados para execução do serviço, comunicação, suporte, prevenção de fraude e cumprimento de obrigações legais, conforme a legislação brasileira aplicável.
+          </p>
+        </section>
+
+        <button type="submit" class="btn-primary full submit-btn">Continuar para pagamento</button>
+      </form>
+    </div>
   </div>
 </section>
 
 <div class="modal" id="termsModal">
-  <div class="modal-content">
+  <div class="modal-content legal-modal">
     <button class="modal-close" id="closeTerms">×</button>
 
-    <h2>Termos de Uso — Clyora AI</h2>
+    <span class="terms-kicker">Versão 1.0 — Atualizado em 03/06/2026</span>
+    <h2>Termos de Uso e Política de Privacidade — Clyora AI</h2>
 
-    <p>
-      Ao contratar a Clyora AI, o cliente declara estar ciente de que a plataforma oferece serviços de automação,
-      atendimento com IA, marketing digital e suporte operacional conforme as informações fornecidas no cadastro.
+    <p class="terms-intro">
+      Estes Termos regulam o uso da Clyora AI, plataforma de automação, atendimento com inteligência artificial, apoio operacional e marketing digital. Ao marcar o aceite e continuar para o pagamento, o cliente declara que leu, compreendeu e concorda com estas condições.
     </p>
 
-    <h3>1. Uso das informações</h3>
+    <h3>1. Identificação e aceite</h3>
     <p>
-      As informações preenchidas pelo cliente serão utilizadas para configurar a IA, orientar respostas automáticas,
-      criar materiais de divulgação e personalizar a operação da empresa.
+      A contratação ocorre por meio digital, com preenchimento do cadastro, aceite destes Termos e confirmação do pagamento. O cliente declara ter poderes para contratar em nome da empresa informada e se compromete a manter seus dados corretos e atualizados.
     </p>
 
-    <h3>2. Limites da IA</h3>
+    <h3>2. Objeto do serviço</h3>
     <p>
-      A IA responderá apenas com base nas informações fornecidas pelo cliente. Caso uma pergunta envolva produto,
-      serviço, preço, condição ou informação não cadastrada, o atendimento poderá ser encaminhado para um humano.
+      A Clyora AI oferece recursos para configurar atendimento automatizado, organizar informações comerciais, apoiar respostas por IA, gerar materiais de divulgação e auxiliar a operação digital da empresa, conforme o plano contratado e as informações fornecidas pelo cliente.
     </p>
 
-    <h3>3. Responsabilidade do cliente</h3>
+    <h3>3. Cadastro e veracidade das informações</h3>
     <p>
-      O cliente é responsável pela veracidade das informações cadastradas, pelo acesso às redes sociais informadas
-      e pela autorização de conexão com WhatsApp Business, Instagram ou outros canais necessários.
+      O cliente é responsável pela veracidade, atualização e legalidade das informações cadastradas, incluindo dados da empresa, produtos, serviços, preços, regras de atendimento, redes sociais, WhatsApp Business e autorizações necessárias para operação.
     </p>
 
-    <h3>4. Marketing e assinatura da plataforma</h3>
+    <h3>4. Uso de inteligência artificial e limites</h3>
     <p>
-      Os materiais gerados pela plataforma poderão conter uma assinatura discreta da tecnologia utilizada,
-      como “Powered by Clyora AI”.
+      A IA responderá com base nas informações cadastradas e nas configurações da empresa. O cliente reconhece que sistemas de IA podem gerar respostas imprecisas, incompletas ou inadequadas quando os dados fornecidos forem insuficientes, ambíguos ou desatualizados. Quando o assunto estiver fora da base cadastrada, o atendimento poderá ser encaminhado para humano.
     </p>
 
-    <h3>5. Pagamento e planos</h3>
+    <h3>5. Obrigações do cliente</h3>
     <p>
-      O acesso à plataforma depende da confirmação do pagamento. Durante o período contratado, o valor permanece
-      conforme o plano escolhido. Ao final do plano, a renovação poderá ocorrer pelo valor vigente no momento da renovação.
+      O cliente deve revisar as informações inseridas, acompanhar a operação, corrigir dados incorretos, evitar conteúdo ilegal ou ofensivo e garantir que possui autorização para uso de marcas, imagens, textos, produtos, serviços e contas conectadas à plataforma.
     </p>
 
-    <h3>6. Encerramento ou pausa do acesso</h3>
+    <h3>6. Integrações e serviços de terceiros</h3>
     <p>
-      Caso a assinatura expire ou o pagamento não seja confirmado, o acesso ao painel e às automações poderá ser pausado
-      até a regularização ou renovação do plano.
+      A plataforma pode utilizar integrações com provedores externos, como ferramentas de pagamento, bancos de dados, automação, inteligência artificial, redes sociais e canais de comunicação. A disponibilidade desses recursos também depende das regras, políticas e funcionamento dos respectivos terceiros.
     </p>
 
-    <h3>7. Privacidade</h3>
+    <h3>7. Pagamentos, planos e renovação</h3>
     <p>
-      A Clyora AI não vende dados dos clientes. As informações cadastradas são utilizadas para operação,
-      configuração e melhoria do serviço.
+      O acesso à plataforma depende da confirmação do pagamento pelo provedor escolhido. Valores, descontos, períodos, meios de pagamento e renovações seguem o plano selecionado e as condições exibidas no momento da contratação. Em caso de inadimplência, falha de pagamento, cancelamento ou expiração, o acesso poderá ser suspenso até regularização.
     </p>
 
-    <h3>8. Aceite</h3>
+    <h3>8. Cancelamento e reembolso</h3>
     <p>
-      Ao marcar a opção de aceite, o cliente confirma que leu, compreendeu e concorda com estes Termos de Uso.
+      Solicitações de cancelamento, estorno ou reembolso serão analisadas conforme o plano contratado, o período de uso, as regras do provedor de pagamento e a legislação brasileira aplicável, incluindo normas de defesa do consumidor quando cabíveis.
     </p>
+
+    <h3>9. Marketing, materiais gerados e assinatura</h3>
+    <p>
+      Materiais criados pela Clyora AI podem usar os dados, imagens, marcas e orientações informadas pelo cliente. Esses materiais podem conter assinatura discreta de tecnologia, como “Powered by Clyora AI”, salvo ajuste comercial específico.
+    </p>
+
+    <h3>10. Proteção de dados e LGPD</h3>
+    <p>
+      Os dados pessoais informados serão tratados para execução do contrato, configuração e operação do serviço, suporte, comunicação, prevenção de fraude, segurança, melhoria da plataforma e cumprimento de obrigações legais. O cliente pode solicitar acesso, correção, atualização ou exclusão de dados pessoais, respeitados prazos legais, bases legais aplicáveis e necessidades legítimas de retenção.
+    </p>
+
+    <h3>11. Compartilhamento de dados</h3>
+    <p>
+      A Clyora AI não vende dados pessoais dos clientes. Dados poderão ser compartilhados apenas quando necessário para operação do serviço, processamento de pagamento, hospedagem, automação, suporte técnico, cumprimento legal ou proteção de direitos.
+    </p>
+
+    <h3>12. Segurança</h3>
+    <p>
+      A Clyora AI adota medidas razoáveis de segurança para proteger informações cadastradas. O cliente também deve proteger suas credenciais, evitar compartilhamento indevido de senhas e comunicar qualquer uso suspeito de sua conta.
+    </p>
+
+    <h3>13. Propriedade intelectual</h3>
+    <p>
+      A plataforma, identidade, tecnologia, fluxos, textos, interfaces e soluções da Clyora AI permanecem de titularidade da Clyora AI ou de seus licenciadores. O cliente mantém os direitos sobre suas marcas, dados e conteúdos próprios, concedendo autorização de uso apenas para execução dos serviços contratados.
+    </p>
+
+    <h3>14. Disponibilidade e alterações</h3>
+    <p>
+      A plataforma poderá passar por manutenções, melhorias, atualizações ou ajustes operacionais. A Clyora AI poderá alterar estes Termos para refletir mudanças legais, técnicas ou comerciais, disponibilizando versão atualizada nos canais oficiais.
+    </p>
+
+    <h3>15. Limitação de responsabilidade</h3>
+    <p>
+      A Clyora AI não substitui gestão comercial, jurídica, contábil, financeira ou atendimento humano especializado. A responsabilidade por decisões comerciais, informações fornecidas aos clientes finais e uso dos materiais gerados permanece com o cliente contratante.
+    </p>
+
+    <h3>16. Suporte e comunicação</h3>
+    <p>
+      Comunicações sobre cadastro, pagamento, suporte, operação e avisos importantes poderão ocorrer por e-mail, WhatsApp ou outros canais informados pelo cliente no cadastro.
+    </p>
+
+    <h3>17. Lei aplicável</h3>
+    <p>
+      Estes Termos são regidos pela legislação brasileira aplicável. Eventuais conflitos deverão ser resolvidos preferencialmente por contato direto entre as partes, sem prejuízo dos direitos assegurados por lei.
+    </p>
+
+    <div class="terms-disclaimer">
+      <strong>Observação importante:</strong>
+      <p>
+        Este documento organiza regras comerciais e de privacidade para uso da plataforma, mas recomenda-se revisão por profissional jurídico para adequação final ao CNPJ, operação, políticas internas e modelo de contratação da empresa.
+      </p>
+    </div>
   </div>
 </div>
 
