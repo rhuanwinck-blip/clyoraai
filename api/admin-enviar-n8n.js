@@ -1,4 +1,5 @@
 const { buildN8nPayload } = require("./_n8n-payload");
+const { generateClientWelcomeMessage } = require("./_ai-welcome");
 const { sendAdminWhatsapp } = require("./_admin-whatsapp");
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.supabase.co";
@@ -68,6 +69,28 @@ async function notifyN8n(payload) {
   return { sent: true };
 }
 
+async function safePrepareClientWelcome(cliente, payload) {
+  try {
+    const welcome = await generateClientWelcomeMessage(cliente, payload);
+
+    if (payload?.automacao && welcome?.message) {
+      payload.automacao.mensagem_cliente_boas_vindas = welcome.message;
+      payload.automacao.mensagem_cliente_origem = welcome.source;
+      payload.automacao.mensagem_cliente_modelo = welcome.model || null;
+      payload.automacao.mensagem_cliente_observacao = welcome.reason || welcome.error || null;
+    }
+
+    return {
+      source: welcome?.source || "fallback",
+      model: welcome?.model || null,
+      reason: welcome?.reason || null,
+      error: welcome?.error || null
+    };
+  } catch (error) {
+    return { source: "fallback", error: error.message || "Erro ao preparar mensagem do cliente" };
+  }
+}
+
 async function safeSendAdminWhatsapp(payload) {
   try {
     return await sendAdminWhatsapp(payload);
@@ -113,10 +136,11 @@ module.exports = async function handler(req, res) {
     }
 
     const payload = buildN8nPayload(cliente, "admin_reenvio_cliente");
+    const clienteMensagem = await safePrepareClientWelcome(cliente, payload);
     const n8n = await notifyN8n(payload);
     const whatsapp = await safeSendAdminWhatsapp(payload);
 
-    send(res, 200, { ok: true, email, n8n, whatsapp });
+    send(res, 200, { ok: true, email, n8n, whatsapp, cliente_mensagem: clienteMensagem });
   } catch (error) {
     send(res, 500, { error: error.message || "Erro ao enviar cliente para n8n." });
   }
