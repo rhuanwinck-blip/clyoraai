@@ -1,10 +1,11 @@
 const crypto = require("crypto");
+const { buildN8nPayload } = require("./_n8n-payload");
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 const MERCADO_PAGO_WEBHOOK_SECRET = process.env.MERCADO_PAGO_WEBHOOK_SECRET;
-const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || process.env.N8N_WEBHOOK;
 
 const ACTIVE_STATUSES = new Set(["authorized", "active"]);
 const INACTIVE_STATUSES = new Set(["paused", "cancelled", "cancelled_process", "expired"]);
@@ -152,12 +153,7 @@ async function notifyN8n(cliente, event = "cliente_ativado") {
   const response = await fetch(N8N_WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      event,
-      source: "clyoraai",
-      sent_at: new Date().toISOString(),
-      cliente
-    })
+    body: JSON.stringify(buildN8nPayload(cliente, event))
   });
 
   const text = await response.text();
