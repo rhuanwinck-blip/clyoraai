@@ -1,4 +1,5 @@
 const { buildN8nPayload } = require("./_n8n-payload");
+const { sendAdminWhatsapp } = require("./_admin-whatsapp");
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -49,11 +50,13 @@ async function findClienteByEmail(email) {
   return Array.isArray(clientes) ? clientes[0] : null;
 }
 
-async function notifyN8n(cliente, event = "admin_reenvio_cliente") {
+async function notifyN8n(payload) {
+  if (!N8N_WEBHOOK_URL) return { sent: false, reason: "N8N_WEBHOOK_URL nao configurada" };
+
   const response = await fetch(N8N_WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(buildN8nPayload(cliente, event))
+    body: JSON.stringify(payload)
   });
 
   const text = await response.text();
@@ -63,6 +66,14 @@ async function notifyN8n(cliente, event = "admin_reenvio_cliente") {
   }
 
   return { sent: true };
+}
+
+async function safeSendAdminWhatsapp(payload) {
+  try {
+    return await sendAdminWhatsapp(payload);
+  } catch (error) {
+    return { sent: false, error: error.message || "Erro ao enviar WhatsApp." };
+  }
 }
 
 module.exports = async function handler(req, res) {
@@ -78,11 +89,6 @@ module.exports = async function handler(req, res) {
 
   if (!ADMIN_ACCESS_CODE) {
     send(res, 500, { error: "ADMIN_ACCESS_CODE ainda nao foi configurado na Vercel." });
-    return;
-  }
-
-  if (!N8N_WEBHOOK_URL) {
-    send(res, 500, { error: "N8N_WEBHOOK_URL ainda nao foi configurada na Vercel." });
     return;
   }
 
@@ -106,8 +112,11 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    const n8n = await notifyN8n(cliente);
-    send(res, 200, { ok: true, email, n8n });
+    const payload = buildN8nPayload(cliente, "admin_reenvio_cliente");
+    const n8n = await notifyN8n(payload);
+    const whatsapp = await safeSendAdminWhatsapp(payload);
+
+    send(res, 200, { ok: true, email, n8n, whatsapp });
   } catch (error) {
     send(res, 500, { error: error.message || "Erro ao enviar cliente para n8n." });
   }
