@@ -146,7 +146,7 @@ function buildChecklist(cliente, resumo) {
     },
     {
       etapa: "Avisar cliente",
-      descricao: `Enviar mensagem para ${resumo.responsavel} no WhatsApp ${resumo.whatsapp} confirmando o inicio da implantacao.",`,
+      descricao: `Enviar mensagem para ${resumo.responsavel} no WhatsApp ${resumo.whatsapp} confirmando o inicio da implantacao.`,
       prioridade: "media"
     }
   ];
