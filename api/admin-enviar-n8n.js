@@ -1,3 +1,5 @@
+const { buildN8nPayload } = require("./_n8n-payload");
+
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_ACCESS_CODE = process.env.ADMIN_ACCESS_CODE || process.env.ADMIN_TOKEN;
@@ -51,12 +53,7 @@ async function notifyN8n(cliente, event = "admin_reenvio_cliente") {
   const response = await fetch(N8N_WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      event,
-      source: "clyoraai",
-      sent_at: new Date().toISOString(),
-      cliente
-    })
+    body: JSON.stringify(buildN8nPayload(cliente, event))
   });
 
   const text = await response.text();
