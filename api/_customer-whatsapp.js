@@ -18,8 +18,23 @@ function normalizeBrazilPhone(value) {
   return digits;
 }
 
+function safeJsonParse(text) {
+  try {
+    return text ? JSON.parse(text) : null;
+  } catch (error) {
+    return { raw: text };
+  }
+}
+
 function hasZapiConfig() {
   return Boolean(ZAPI_INSTANCE_ID && ZAPI_TOKEN && ZAPI_CLIENT_TOKEN);
+}
+
+function getWelcomeMessage(cliente, payload) {
+  return (
+    payload?.automacao?.mensagem_cliente_boas_vindas ||
+    buildClientWelcomeMessage(cliente || {}, payload?.automacao?.resumo || {})
+  );
 }
 
 async function sendCustomerWelcomeWhatsapp(cliente, payload) {
@@ -39,7 +54,7 @@ async function sendCustomerWelcomeWhatsapp(cliente, payload) {
     };
   }
 
-  const message = payload?.automacao?.mensagem_cliente_boas_vindas || buildClientWelcomeMessage(cliente || {}, payload?.automacao?.resumo || {});
+  const message = getWelcomeMessage(cliente, payload);
   const response = await fetch(`https://api.z-api.io/instances/${encodeURIComponent(ZAPI_INSTANCE_ID)}/token/${encodeURIComponent(ZAPI_TOKEN)}/send-text`, {
     method: "POST",
     headers: {
@@ -54,7 +69,7 @@ async function sendCustomerWelcomeWhatsapp(cliente, payload) {
   });
 
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  const data = safeJsonParse(text);
 
   if (!response.ok) {
     throw new Error(data?.message || data?.error || `Erro ao enviar WhatsApp para cliente: ${response.status} ${text}`);
@@ -64,7 +79,8 @@ async function sendCustomerWelcomeWhatsapp(cliente, payload) {
     sent: true,
     provider: "zapi",
     phone,
-    messageId: data?.messageId || data?.id || null
+    messageId: data?.messageId || data?.id || null,
+    message_source: payload?.automacao?.mensagem_cliente_origem || "payload"
   };
 }
 
