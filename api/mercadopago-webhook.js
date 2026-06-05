@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { buildN8nPayload } = require("./_n8n-payload");
+const { sendAdminWhatsapp } = require("./_admin-whatsapp");
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -147,13 +148,26 @@ async function markPreCadastroPaid(user, plano) {
   });
 }
 
+async function safeSendAdminWhatsapp(payload) {
+  try {
+    return await sendAdminWhatsapp(payload);
+  } catch (error) {
+    return { sent: false, error: error.message || "Erro ao enviar WhatsApp." };
+  }
+}
+
 async function notifyN8n(cliente, event = "cliente_ativado") {
-  if (!N8N_WEBHOOK_URL) return { sent: false, reason: "N8N_WEBHOOK_URL nao configurada" };
+  const payload = buildN8nPayload(cliente, event);
+  const whatsapp = await safeSendAdminWhatsapp(payload);
+
+  if (!N8N_WEBHOOK_URL) {
+    return { sent: false, reason: "N8N_WEBHOOK_URL nao configurada", whatsapp };
+  }
 
   const response = await fetch(N8N_WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(buildN8nPayload(cliente, event))
+    body: JSON.stringify(payload)
   });
 
   const text = await response.text();
@@ -162,7 +176,7 @@ async function notifyN8n(cliente, event = "cliente_ativado") {
     throw new Error(`Erro ao enviar para n8n: ${response.status} ${text}`);
   }
 
-  return { sent: true };
+  return { sent: true, whatsapp };
 }
 
 function addMonths(date, months) {
