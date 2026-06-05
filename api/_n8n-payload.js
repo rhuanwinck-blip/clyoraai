@@ -38,6 +38,11 @@ function getDisplayName(cliente) {
   return valueOrFallback(cliente.nome_empresa || cliente.nome_responsavel, "Cliente sem nome");
 }
 
+function getFirstName(name) {
+  const text = clean(name);
+  return text ? text.split(/\s+/)[0] : "tudo bem";
+}
+
 function buildResumo(cliente) {
   const produtos = [1, 2, 3]
     .map((index) => buildProduct(cliente, index))
@@ -72,6 +77,21 @@ function buildAdminMessage(cliente, resumo) {
     `Regiao: ${resumo.regiao}`,
     "",
     "Proximo passo: revisar o cadastro no CRM e iniciar a configuracao da IA."
+  ].join("\n");
+}
+
+function buildClientWelcomeMessage(cliente, resumo) {
+  const firstName = getFirstName(cliente.nome_responsavel);
+
+  return [
+    `Ola, ${firstName}! Tudo bem?`,
+    "Aqui e da Clyora AI.",
+    "",
+    `Recebemos a confirmacao do seu plano ${resumo.plano} e seu cadastro ja entrou na nossa fila de implantacao.`,
+    `Vamos revisar as informacoes da ${resumo.empresa} e iniciar a configuracao da sua IA de atendimento.`,
+    "",
+    "Se precisarmos de algum detalhe, vamos chamar voce por aqui.",
+    "Obrigado por confiar na Clyora AI."
   ].join("\n");
 }
 
@@ -126,7 +146,7 @@ function buildChecklist(cliente, resumo) {
     },
     {
       etapa: "Avisar cliente",
-      descricao: `Enviar mensagem para ${resumo.responsavel} no WhatsApp ${resumo.whatsapp} confirmando o inicio da implantacao.`,
+      descricao: `Enviar mensagem para ${resumo.responsavel} no WhatsApp ${resumo.whatsapp} confirmando o inicio da implantacao.",`,
       prioridade: "media"
     }
   ];
@@ -145,6 +165,7 @@ function buildN8nPayload(cliente, event = "cliente_ativado") {
       status: "pronto_para_implantacao",
       resumo,
       mensagem_admin_whatsapp: buildAdminMessage(cliente || {}, resumo),
+      mensagem_cliente_boas_vindas: buildClientWelcomeMessage(cliente || {}, resumo),
       prompt_base_ia: buildPromptBase(cliente || {}, resumo),
       checklist_implantacao: buildChecklist(cliente || {}, resumo),
       proximas_acoes: [
@@ -152,10 +173,11 @@ function buildN8nPayload(cliente, event = "cliente_ativado") {
         "Conferir regras do prompt",
         "Conectar canal de atendimento",
         "Rodar teste interno",
+        "Enviar boas-vindas para o cliente",
         "Liberar atendimento para o cliente"
       ]
     }
   };
 }
 
-module.exports = { buildN8nPayload };
+module.exports = { buildN8nPayload, buildClientWelcomeMessage };
