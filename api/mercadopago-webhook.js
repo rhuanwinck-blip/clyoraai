@@ -1,6 +1,8 @@
 const crypto = require("crypto");
 const { buildN8nPayload } = require("./_n8n-payload");
+const { generateClientWelcomeMessage } = require("./_ai-welcome");
 const { sendAdminWhatsapp } = require("./_admin-whatsapp");
+const { sendCustomerWelcomeWhatsapp } = require("./_customer-whatsapp");
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://odmzoygdrllcypxnuooa.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -148,6 +150,28 @@ async function markPreCadastroPaid(user, plano) {
   });
 }
 
+async function safePrepareClientWelcome(cliente, payload) {
+  try {
+    const welcome = await generateClientWelcomeMessage(cliente, payload);
+
+    if (payload?.automacao && welcome?.message) {
+      payload.automacao.mensagem_cliente_boas_vindas = welcome.message;
+      payload.automacao.mensagem_cliente_origem = welcome.source;
+      payload.automacao.mensagem_cliente_modelo = welcome.model || null;
+      payload.automacao.mensagem_cliente_observacao = welcome.reason || welcome.error || null;
+    }
+
+    return {
+      source: welcome?.source || "fallback",
+      model: welcome?.model || null,
+      reason: welcome?.reason || null,
+      error: welcome?.error || null
+    };
+  } catch (error) {
+    return { source: "fallback", error: error.message || "Erro ao preparar mensagem do cliente" };
+  }
+}
+
 async function safeSendAdminWhatsapp(payload) {
   try {
     return await sendAdminWhatsapp(payload);
@@ -156,12 +180,32 @@ async function safeSendAdminWhatsapp(payload) {
   }
 }
 
+async function safeSendCustomerWelcome(cliente, payload) {
+  try {
+    return await sendCustomerWelcomeWhatsapp(cliente, payload);
+  } catch (error) {
+    return { sent: false, error: error.message || "Erro ao enviar boas-vindas para o cliente." };
+  }
+}
+
 async function notifyN8n(cliente, event = "cliente_ativado") {
   const payload = buildN8nPayload(cliente, event);
+  const clientWelcome = event === "cliente_ativado"
+    ? await safePrepareClientWelcome(cliente, payload)
+    : { source: "none", reason: "Evento nao dispara mensagem de boas-vindas" };
   const whatsapp = await safeSendAdminWhatsapp(payload);
+  const clienteWhatsapp = event === "cliente_ativado"
+    ? await safeSendCustomerWelcome(cliente, payload)
+    : { sent: false, reason: "Evento nao dispara mensagem de boas-vindas" };
 
   if (!N8N_WEBHOOK_URL) {
-    return { sent: false, reason: "N8N_WEBHOOK_URL nao configurada", whatsapp };
+    return {
+      sent: false,
+      reason: "N8N_WEBHOOK_URL nao configurada",
+      whatsapp,
+      cliente_whatsapp: clienteWhatsapp,
+      cliente_mensagem: clientWelcome
+    };
   }
 
   const response = await fetch(N8N_WEBHOOK_URL, {
@@ -176,7 +220,12 @@ async function notifyN8n(cliente, event = "cliente_ativado") {
     throw new Error(`Erro ao enviar para n8n: ${response.status} ${text}`);
   }
 
-  return { sent: true, whatsapp };
+  return {
+    sent: true,
+    whatsapp,
+    cliente_whatsapp: clienteWhatsapp,
+    cliente_mensagem: clientWelcome
+  };
 }
 
 function addMonths(date, months) {
