@@ -1,3 +1,5 @@
+const { buildWorkspaceSeed } = require("./_workspace-defaults");
+
 const PLAN_LABELS = {
   mensal: "Mensal",
   trimestral: "Trimestral",
@@ -43,6 +45,12 @@ function getFirstName(name) {
   return text ? text.split(/\s+/)[0] : "tudo bem";
 }
 
+function getPublicBaseUrl() {
+  if (process.env.PUBLIC_SITE_URL) return clean(process.env.PUBLIC_SITE_URL).replace(/\/$/, "");
+  if (process.env.VERCEL_URL) return `https://${clean(process.env.VERCEL_URL).replace(/^https?:\/\//, "").replace(/\/$/, "")}`;
+  return "https://clyoraai.vercel.app";
+}
+
 function buildResumo(cliente) {
   const produtos = [1, 2, 3]
     .map((index) => buildProduct(cliente, index))
@@ -76,7 +84,7 @@ function buildAdminMessage(cliente, resumo) {
     `Atendimento: ${resumo.atendimento}`,
     `Regiao: ${resumo.regiao}`,
     "",
-    "Proximo passo: revisar o cadastro no CRM e iniciar a configuracao da IA."
+    "Proximo passo: revisar o cadastro no CRM e iniciar a central de IA da empresa."
   ].join("\n");
 }
 
@@ -88,20 +96,20 @@ function buildClientWelcomeMessage(cliente, resumo) {
     "Aqui e da Clyora AI.",
     "",
     `Recebemos a confirmacao do seu plano ${resumo.plano} e seu cadastro ja entrou na nossa fila de implantacao.`,
-    `Vamos revisar as informacoes da ${resumo.empresa} e iniciar a configuracao da sua IA de atendimento.`,
+    `Vamos revisar as informacoes da ${resumo.empresa} e iniciar a configuracao da sua central de IA, atendimento e marketing.`,
     "",
     "Se precisarmos de algum detalhe, vamos chamar voce por aqui.",
     "Obrigado por confiar na Clyora AI."
   ].join("\n");
 }
 
-function buildPromptBase(cliente, resumo) {
+function buildPromptBase(cliente, resumo, workspace) {
   const produtos = resumo.produtos.length
     ? resumo.produtos.map((produto, index) => `${index + 1}. ${produto.resumo}`).join("\n")
     : "Nenhum produto informado.";
 
   return [
-    `Voce e a IA de atendimento da empresa ${resumo.empresa}.`,
+    `Voce atende clientes finais da empresa ${resumo.empresa}.`,
     `Responsavel pelo projeto: ${resumo.responsavel}.`,
     `Nicho da empresa: ${resumo.nicho}.`,
     `Tipo de atendimento: ${resumo.atendimento}.`,
@@ -112,12 +120,16 @@ function buildPromptBase(cliente, resumo) {
     "Produtos ou ofertas cadastradas:",
     produtos,
     "",
+    "Memoria inicial da empresa:",
+    workspace.memory_empresa,
+    "",
     "Regras de atendimento:",
     `Pode responder: ${valueOrFallback(cliente.pode_responder)}.`,
     `Nao pode responder: ${valueOrFallback(cliente.nao_pode_responder)}.`,
     `Encaminhar para humano quando: ${valueOrFallback(cliente.quando_encaminhar)}.`,
     `Tom de voz: ${valueOrFallback(cliente.tom_voz)}.`,
     "",
+    "Identidade: fale em nome da empresa/equipe. Nao afirme ser o dono ou uma pessoa especifica.",
     "Objetivo: atender leads com clareza, coletar nome, telefone e necessidade, explicar os servicos com seguranca e encaminhar para humano quando necessario."
   ].join("\n");
 }
@@ -126,22 +138,27 @@ function buildChecklist(cliente, resumo) {
   return [
     {
       etapa: "Conferir cadastro",
-      descricao: "Validar nome, WhatsApp, Instagram, nicho, servicos e produtos no CRM.",
+      descricao: "Validar nome, WhatsApp, Instagram, nicho, servicos, produtos e regras no CRM.",
       prioridade: "alta"
     },
     {
-      etapa: "Montar prompt da IA",
-      descricao: "Usar o prompt_base_ia enviado neste payload como ponto de partida.",
+      etapa: "Criar central de IA",
+      descricao: "Gerar memoria inicial, agentes, fluxos n8n e status da implantacao para este cliente.",
       prioridade: "alta"
     },
     {
-      etapa: "Configurar canal",
-      descricao: `Conectar o canal de atendimento informado pelo cliente: ${resumo.atendimento}.`,
+      etapa: "Conectar WhatsApp oficial",
+      descricao: `Conectar o WhatsApp da empresa e enviar mensagens para o endpoint /api/ai-atendimento com cliente_email=${resumo.email}.`,
       prioridade: "alta"
     },
     {
-      etapa: "Testar respostas",
-      descricao: "Simular perguntas comuns, limites da IA e encaminhamento para humano.",
+      etapa: "Testar atendimento",
+      descricao: "Simular perguntas comuns, vendas, limites da IA, memoria e encaminhamento para humano.",
+      prioridade: "alta"
+    },
+    {
+      etapa: "Ativar marketing",
+      descricao: "Gerar calendario, ideias e legendas para aprovacao antes de publicar no Instagram.",
       prioridade: "media"
     },
     {
@@ -154,26 +171,47 @@ function buildChecklist(cliente, resumo) {
 
 function buildN8nPayload(cliente, event = "cliente_ativado") {
   const resumo = buildResumo(cliente || {});
+  const workspace = buildWorkspaceSeed(cliente || {});
+  const baseUrl = getPublicBaseUrl();
 
   return {
     event,
     source: "clyoraai",
     sent_at: new Date().toISOString(),
     cliente,
+    workspace,
+    integracoes: {
+      agent_endpoint: `${baseUrl}/api/ai-atendimento`,
+      client_workspace_endpoint: `${baseUrl}/api/client-workspace`,
+      auth_header: "Authorization: Bearer CLYORA_AGENT_SECRET",
+      isolamento_memoria: "cliente_email + contato_telefone"
+    },
     automacao: {
       tipo: "implantacao_cliente",
       status: "pronto_para_implantacao",
       resumo,
+      central_ia: {
+        slug: workspace.slug,
+        status: workspace.status,
+        agentes: workspace.agents,
+        fluxos: workspace.workflows,
+        memoria_empresa: workspace.memory_empresa,
+        memoria_clientes: workspace.memory_clientes,
+        handoff: workspace.handoff,
+        marketing: workspace.marketing
+      },
       mensagem_admin_whatsapp: buildAdminMessage(cliente || {}, resumo),
       mensagem_cliente_boas_vindas: buildClientWelcomeMessage(cliente || {}, resumo),
-      prompt_base_ia: buildPromptBase(cliente || {}, resumo),
+      prompt_base_ia: buildPromptBase(cliente || {}, resumo, workspace),
       checklist_implantacao: buildChecklist(cliente || {}, resumo),
       proximas_acoes: [
         "Revisar dados no CRM",
-        "Conferir regras do prompt",
-        "Conectar canal de atendimento",
-        "Rodar teste interno",
-        "Enviar boas-vindas para o cliente",
+        "Criar ou atualizar a central de IA no admin",
+        "Configurar workflow n8n exclusivo do cliente",
+        "Conectar WhatsApp oficial da empresa",
+        "Rodar teste interno de atendimento",
+        "Ativar memoria por cliente final",
+        "Gerar primeira pauta de marketing",
         "Liberar atendimento para o cliente"
       ]
     }
