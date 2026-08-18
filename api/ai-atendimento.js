@@ -231,7 +231,7 @@ async function saveContactMemory(cliente, body, resposta, needsHuman) {
   ].filter(Boolean).join("\n"), 5000);
 
   try {
-    await supabaseRequest("/rest/v1/cliente_contatos_memoria", {
+    await supabaseRequest("/rest/v1/cliente_contatos_memoria?on_conflict=cliente_email,contato_telefone", {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates,return=representation" },
       body: JSON.stringify({
