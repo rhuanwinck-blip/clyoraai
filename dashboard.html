@@ -4,20 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Painel | Clyora AI</title>
+  <title>Central de IA | Clyora AI</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-<header class="header">
+<header class="header dashboard-header">
   <div class="logo">
     <span class="logo-mark">C</span>
     <span class="logo-text">Clyora<span>AI</span></span>
   </div>
 
-  <nav class="nav">
-    <a href="#assinatura">Assinatura</a>
-    <a href="#ia">IA</a>
+  <nav class="nav workspace-nav">
+    <a href="#central">Central IA</a>
+    <a href="#memoria">Memória</a>
+    <a href="#fluxos">Fluxos</a>
     <a href="#marketing">Marketing</a>
     <a href="#empresa">Empresa</a>
   </nav>
@@ -25,121 +26,202 @@
   <button id="logoutBtn" class="btn-header">Sair</button>
 </header>
 
-<section class="dashboard">
-  <div class="dashboard-title">
-    <span class="section-label">Painel do cliente</span>
-    <h1 id="empresaTitulo">Carregando...</h1>
-    <p id="dashboardSubtitulo">Buscando informações da sua empresa.</p>
-  </div>
+<main class="dashboard client-workspace">
+  <section class="workspace-hero">
+    <div class="workspace-hero-copy">
+      <span class="section-label">Central de IA do cliente</span>
+      <h1 id="empresaTitulo">Carregando...</h1>
+      <p id="dashboardSubtitulo">Buscando a operação de IA da sua empresa.</p>
+    </div>
+
+    <div class="workspace-hero-panel">
+      <div class="metric-card">
+        <span>Assinatura</span>
+        <strong id="statusCliente">-</strong>
+      </div>
+      <div class="metric-card">
+        <span>Plano</span>
+        <strong id="planoCliente">-</strong>
+      </div>
+      <div class="metric-card">
+        <span>Central IA</span>
+        <strong id="workspaceStatusPill">-</strong>
+      </div>
+      <div class="metric-card">
+        <span>Memória</span>
+        <strong id="lastMemoryUpdate">-</strong>
+      </div>
+    </div>
+  </section>
 
   <div id="bloqueioBox" class="warning-box hidden">
     <strong>Acesso não liberado</strong>
     <p>
-      Sua assinatura ainda não está ativa ou precisa ser renovada.
-      Assim que o pagamento for confirmado, o painel será liberado.
+      Sua assinatura ainda não está ativa ou precisa ser renovada. Assim que o pagamento for confirmado, sua central será liberada.
     </p>
     <a href="index.html#planos" class="btn-primary">Ver planos</a>
   </div>
 
-  <div id="dashboardConteudo">
-    <div id="assinatura" class="dashboard-grid">
-      <div class="dash-card">
-        <h3>Status da assinatura</h3>
-        <p id="statusCliente" class="status inactive">Carregando</p>
-        <p><strong>Plano:</strong> <span id="planoCliente">-</span></p>
-        <p><strong>Data de início:</strong> <span id="dataInicio">Não configurado</span></p>
-        <p><strong>Data de fim:</strong> <span id="dataFim">Não configurado</span></p>
+  <div id="workspaceMessage" class="auth-message"></div>
+
+  <div id="dashboardConteudo" class="workspace-content hidden">
+    <section id="central" class="workspace-grid">
+      <article class="workspace-card workspace-main-card">
+        <div class="workspace-card-head">
+          <div>
+            <span class="section-label">Operação individual</span>
+            <h2>Agentes da sua empresa</h2>
+          </div>
+          <span id="workspaceSlug" class="workspace-chip">-</span>
+        </div>
+        <p class="workspace-muted">
+          Cada agente usa somente os dados da sua empresa e o histórico dos seus próprios clientes finais.
+        </p>
+        <div id="agentGrid" class="agent-grid"></div>
+      </article>
+
+      <aside class="workspace-card workspace-side-card">
+        <h2>Controle rápido</h2>
+        <div class="status-stack">
+          <p><strong>WhatsApp:</strong> <span id="whatsappStatus" class="status inactive">-</span></p>
+          <p><strong>Instagram:</strong> <span id="instagramStatus" class="status inactive">-</span></p>
+          <p><strong>Início:</strong> <span id="dataInicio">Não configurado</span></p>
+          <p><strong>Renovação:</strong> <span id="dataFim">Não configurado</span></p>
+        </div>
+        <div class="workspace-note-box">
+          <strong>Como funciona</strong>
+          <p>A central recebe conversas do WhatsApp, consulta a memória, gera resposta, salva aprendizado e encaminha para humano quando necessário.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="memoria" class="workspace-grid memory-section">
+      <article class="workspace-card">
+        <div class="workspace-card-head compact">
+          <div>
+            <span class="section-label">Treinamento</span>
+            <h2>Memória viva da empresa</h2>
+          </div>
+        </div>
+        <p id="memorySummary" class="memory-preview">-</p>
+      </article>
+
+      <article class="workspace-card">
+        <div class="workspace-card-head compact">
+          <div>
+            <span class="section-label">Clientes finais</span>
+            <h2>Memória separada por pessoa</h2>
+          </div>
+        </div>
+        <p id="customerMemorySummary" class="memory-preview">-</p>
+      </article>
+    </section>
+
+    <section id="fluxos" class="workspace-card">
+      <div class="workspace-card-head">
+        <div>
+          <span class="section-label">n8n por cliente</span>
+          <h2>Fluxos da operação</h2>
+        </div>
+        <span id="n8nEndpoint" class="workspace-chip muted-chip">Aguardando URL</span>
+      </div>
+      <div id="workflowGrid" class="workflow-grid"></div>
+    </section>
+
+    <section id="marketing" class="workspace-grid">
+      <article class="workspace-card">
+        <span class="section-label">Marketing</span>
+        <h2>Instagram e campanhas</h2>
+        <div class="kv-grid">
+          <p><strong>Opção:</strong> <span id="marketingOpcao">-</span></p>
+          <p><strong>Frequência:</strong> <span id="marketingFrequencia">-</span></p>
+          <p><strong>Status:</strong> <span id="marketingStatus">-</span></p>
+        </div>
+        <p id="marketingGuidelinesView" class="workspace-muted">-</p>
+      </article>
+
+      <article class="workspace-card">
+        <span class="section-label">Humano no controle</span>
+        <h2>Encaminhamento</h2>
+        <p id="handoffSummary" class="memory-preview">-</p>
+      </article>
+    </section>
+
+    <section class="workspace-card training-card">
+      <div class="workspace-card-head">
+        <div>
+          <span class="section-label">Ajustes da sua IA</span>
+          <h2>Treine a central com novas informações</h2>
+        </div>
       </div>
 
-      <div class="dash-card">
-        <h3>Atendimento com IA</h3>
-        <p id="iaStatus" class="status active">Preparado</p>
-        <p>A IA será configurada com base nas informações cadastradas da sua empresa.</p>
-        <button class="small-btn">Pausar IA</button>
-      </div>
+      <form id="workspaceForm" class="workspace-form">
+        <div class="form-two-cols">
+          <div>
+            <label for="workspaceStatus">Status da central</label>
+            <select id="workspaceStatus">
+              <option value="em_implantacao">Em implantação</option>
+              <option value="treinamento">Em treinamento</option>
+              <option value="ativo">Ativo</option>
+              <option value="pausado">Pausado</option>
+            </select>
+          </div>
 
-      <div class="dash-card">
-        <h3>Marketing automático</h3>
-        <p id="marketingStatus" class="status active">Preparado</p>
-        <p><strong>Frequência:</strong> <span id="marketingFrequencia">-</span></p>
-        <button class="small-btn">Pausar marketing</button>
-      </div>
-    </div>
+          <div>
+            <label for="workspaceN8nUrl">URL do workflow n8n</label>
+            <input id="workspaceN8nUrl" type="url" placeholder="https://..." />
+          </div>
+        </div>
 
-    <div id="empresa" class="dashboard-grid">
-      <div class="dash-card">
-        <h3>Dados da empresa</h3>
-        <p><strong>Empresa:</strong> <span id="nomeEmpresa">-</span></p>
-        <p><strong>Responsável:</strong> <span id="nomeResponsavel">-</span></p>
-        <p><strong>E-mail:</strong> <span id="emailCliente">-</span></p>
-        <p><strong>WhatsApp:</strong> <span id="whatsappCliente">-</span></p>
-        <p><strong>Instagram:</strong> <span id="instagramCliente">-</span></p>
-      </div>
+        <label for="memoryEmpresa">Memória principal da empresa</label>
+        <textarea id="memoryEmpresa" placeholder="Conte para a IA tudo que ela precisa saber sobre sua empresa."></textarea>
 
-      <div class="dash-card">
-        <h3>Perfil comercial</h3>
-        <p><strong>Nicho:</strong> <span id="nichoCliente">-</span></p>
-        <p><strong>Atendimento:</strong> <span id="tipoAtendimento">-</span></p>
-        <p><strong>Região:</strong> <span id="regiaoAtendimento">-</span></p>
-        <p><strong>Público-alvo:</strong> <span id="publicoAlvo">-</span></p>
-      </div>
+        <div class="form-two-cols">
+          <div>
+            <label for="handoffRules">Quando chamar humano</label>
+            <textarea id="handoffRules" placeholder="Ex: reclamações, orçamento fora do padrão, dúvidas sensíveis..."></textarea>
+          </div>
 
-      <div class="dash-card">
-        <h3>Serviços</h3>
-        <p id="servicosCliente">-</p>
-      </div>
-    </div>
+          <div>
+            <label for="marketingGuidelines">Diretrizes de marketing</label>
+            <textarea id="marketingGuidelines" placeholder="Ex: estilo dos posts, temas proibidos, campanhas do mês..."></textarea>
+          </div>
+        </div>
 
-    <div id="ia" class="dashboard-grid">
-      <div class="dash-card">
-        <h3>Regras da IA</h3>
-        <p><strong>Pode responder:</strong></p>
-        <p id="podeResponder">-</p>
+        <label for="workspaceNotes">Notas internas da implantação</label>
+        <textarea id="workspaceNotes" placeholder="Anotações para a equipe Clyora ou ajustes futuros."></textarea>
 
-        <p><strong>Não pode responder:</strong></p>
-        <p id="naoPodeResponder">-</p>
+        <button id="saveWorkspaceBtn" type="submit" class="btn-primary">Salvar treinamento</button>
+      </form>
+    </section>
 
-        <p><strong>Encaminhar para humano:</strong></p>
-        <p id="quandoEncaminhar">-</p>
-      </div>
+    <section id="empresa" class="workspace-grid">
+      <article class="workspace-card">
+        <span class="section-label">Empresa</span>
+        <h2>Dados cadastrados</h2>
+        <div class="kv-grid">
+          <p><strong>Empresa:</strong> <span id="nomeEmpresa">-</span></p>
+          <p><strong>Responsável:</strong> <span id="nomeResponsavel">-</span></p>
+          <p><strong>E-mail:</strong> <span id="emailCliente">-</span></p>
+          <p><strong>WhatsApp:</strong> <span id="whatsappCliente">-</span></p>
+          <p><strong>Instagram:</strong> <span id="instagramCliente">-</span></p>
+        </div>
+      </article>
 
-      <div class="dash-card">
-        <h3>Tom de voz</h3>
-        <p id="tomVoz">-</p>
-      </div>
-
-      <div class="dash-card">
-        <h3>Produtos principais</h3>
-        <p><strong>Produto 1:</strong> <span id="produto1">-</span></p>
-        <p><strong>Produto 2:</strong> <span id="produto2">-</span></p>
-        <p><strong>Produto 3:</strong> <span id="produto3">-</span></p>
-      </div>
-    </div>
-
-    <div id="marketing" class="dashboard-grid">
-      <div class="dash-card">
-        <h3>Configuração de marketing</h3>
-        <p><strong>Opção:</strong> <span id="marketingOpcao">-</span></p>
-        <p><strong>Frequência:</strong> <span id="marketingFreq2">-</span></p>
-        <p><strong>Personalizado:</strong> <span id="marketingPersonalizado">-</span></p>
-      </div>
-
-      <div class="dash-card">
-        <h3>Conexões</h3>
-        <p class="status inactive">WhatsApp não conectado</p>
-        <p class="status inactive">Instagram não conectado</p>
-        <button class="small-btn">Conectar WhatsApp</button>
-        <button class="small-btn">Conectar Instagram</button>
-      </div>
-
-      <div class="dash-card">
-        <h3>Renovação</h3>
-        <p>Quando seu plano terminar, o acesso será pausado até a renovação.</p>
-        <a href="index.html#planos" class="btn-primary">Renovar plano</a>
-      </div>
-    </div>
+      <article class="workspace-card">
+        <span class="section-label">Perfil comercial</span>
+        <h2>Contexto da IA</h2>
+        <div class="kv-grid">
+          <p><strong>Nicho:</strong> <span id="nichoCliente">-</span></p>
+          <p><strong>Atendimento:</strong> <span id="tipoAtendimento">-</span></p>
+          <p><strong>Região:</strong> <span id="regiaoAtendimento">-</span></p>
+          <p><strong>Público-alvo:</strong> <span id="publicoAlvo">-</span></p>
+          <p><strong>Serviços:</strong> <span id="servicosCliente">-</span></p>
+        </div>
+      </article>
+    </section>
   </div>
-</section>
+</main>
 
 <script src="dashboard.js"></script>
 </body>
