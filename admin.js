@@ -18,6 +18,7 @@ const drawerName = document.getElementById("drawerName");
 const drawerMeta = document.getElementById("drawerMeta");
 const drawerContent = document.getElementById("drawerContent");
 const sendN8n = document.getElementById("sendN8n");
+const createWorkspace = document.getElementById("createWorkspace");
 
 let clientes = [];
 let selectedCliente = null;
@@ -62,6 +63,37 @@ function moneyStatus(status) {
   if (status === "pendente_pagamento") return "Pendente";
   if (status === "vencido") return "Vencido";
   return status || "Sem status";
+}
+
+function workspaceStatus(status) {
+  const labels = {
+    em_implantacao: "Em implantação",
+    treinamento: "Em treinamento",
+    ativo: "Ativo",
+    pausado: "Pausado",
+    nao_conectado: "Não conectado",
+    aguardando_conexao: "Aguardando conexão"
+  };
+
+  return labels[status] || status || "Não criada";
+}
+
+function parseMaybeJson(value, fallback = null) {
+  if (Array.isArray(value)) return value;
+  if (value && typeof value === "object") return value;
+  if (!value || typeof value !== "string") return fallback;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function countItems(value, singular, plural) {
+  const parsed = parseMaybeJson(value, []);
+  if (!Array.isArray(parsed) || !parsed.length) return "-";
+  return `${parsed.length} ${parsed.length === 1 ? singular : plural}`;
 }
 
 function setStats(stats = {}) {
@@ -116,6 +148,23 @@ function section(title, rows) {
   `;
 }
 
+function updateSelectedCliente(updatedCliente) {
+  if (!updatedCliente?.email) return;
+
+  const index = clientes.findIndex((cliente) => cliente.email === updatedCliente.email);
+  const normalized = {
+    ...updatedCliente,
+    nome_exibicao: updatedCliente.nome_empresa || updatedCliente.nome_responsavel || "Sem nome",
+    telefone_exibicao: updatedCliente.whatsapp || "",
+    status_exibicao: updatedCliente.status || "sem_status",
+    plano_exibicao: updatedCliente.plano || "sem_plano"
+  };
+
+  if (index >= 0) clientes[index] = normalized;
+  selectedCliente = normalized;
+  renderTable();
+}
+
 function openDetails(cliente) {
   selectedCliente = cliente;
   drawerStatus.textContent = moneyStatus(cliente.status_exibicao);
@@ -128,6 +177,11 @@ function openDetails(cliente) {
     sendN8n.textContent = "Enviar para n8n";
   }
 
+  if (createWorkspace) {
+    createWorkspace.disabled = !cliente.email || cliente.status_exibicao !== "ativo";
+    createWorkspace.textContent = cliente.ai_workspace_status ? "Atualizar central IA" : "Criar central IA";
+  }
+
   drawerContent.innerHTML = [
     section("Cadastro", [
       ["Empresa", cliente.nome_empresa],
@@ -135,6 +189,16 @@ function openDetails(cliente) {
       ["E-mail", cliente.email],
       ["WhatsApp", cliente.whatsapp],
       ["Instagram", cliente.instagram]
+    ]),
+    section("Central de IA", [
+      ["Status", workspaceStatus(cliente.ai_workspace_status)],
+      ["Workspace", cliente.ai_workspace_slug],
+      ["n8n", cliente.ai_workspace_n8n_url],
+      ["WhatsApp", workspaceStatus(cliente.whatsapp_provider_status)],
+      ["Instagram", workspaceStatus(cliente.instagram_status)],
+      ["Agentes", countItems(cliente.ai_agents_config, "agente", "agentes")],
+      ["Fluxos", countItems(cliente.n8n_workflows_config, "fluxo", "fluxos")],
+      ["Última memória", formatDate(cliente.last_memory_update)]
     ]),
     section("Assinatura", [
       ["Status", cliente.status],
@@ -155,7 +219,8 @@ function openDetails(cliente) {
       ["Pode responder", cliente.pode_responder],
       ["Não pode responder", cliente.nao_pode_responder],
       ["Encaminhar para humano", cliente.quando_encaminhar],
-      ["Tom de voz", cliente.tom_voz]
+      ["Tom de voz", cliente.tom_voz],
+      ["Memória da empresa", cliente.memory_empresa]
     ]),
     section("Produtos", [
       ["Produto 1", [cliente.produto_1_nome, cliente.produto_1_descricao, cliente.produto_1_valor].filter(Boolean).join(" - ")],
@@ -247,6 +312,45 @@ async function sendSelectedToN8n() {
   }
 }
 
+async function bootstrapSelectedWorkspace() {
+  if (!selectedCliente?.email) {
+    showMessage(adminError, "Selecione um cliente com e-mail para criar a central.", "error");
+    return;
+  }
+
+  const code = getCode();
+  const originalText = createWorkspace.textContent;
+  createWorkspace.disabled = true;
+  createWorkspace.textContent = "Criando...";
+  showMessage(adminError, "Criando central de IA do cliente...", "info");
+
+  try {
+    const response = await fetch("/api/admin-workspace", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${code}`
+      },
+      body: JSON.stringify({ email: selectedCliente.email })
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error(payload.error || "Erro ao criar central de IA.");
+    }
+
+    updateSelectedCliente(payload.cliente);
+    openDetails(selectedCliente);
+    showMessage(adminError, payload.n8n?.sent ? "Central criada e enviada para o n8n." : "Central criada. n8n ainda não confirmou o recebimento.", "success");
+  } catch (error) {
+    showMessage(adminError, error.message || "Erro ao criar central de IA.", "error");
+    createWorkspace.textContent = originalText;
+  } finally {
+    createWorkspace.disabled = false;
+  }
+}
+
 adminLoginForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const code = adminCodeInput.value.trim();
@@ -268,6 +372,7 @@ clientesTableBody?.addEventListener("click", (event) => {
 });
 
 sendN8n?.addEventListener("click", sendSelectedToN8n);
+createWorkspace?.addEventListener("click", bootstrapSelectedWorkspace);
 
 closeDrawer?.addEventListener("click", () => {
   clientDrawer.classList.remove("active");
